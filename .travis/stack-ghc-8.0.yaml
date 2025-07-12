@@ -1,5 +1,0 @@
-resolver: lts-9.17
-packages:
-- encoding
-- parse
-- types
