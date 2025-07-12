@@ -1,4 +1,4 @@
-Name:                asn1-encoding
+Name:                crypton-asn1-encoding
 Version:             0.9.6
 Synopsis:            ASN1 data reader and writer in RAW, BER and DER forms
 Description:
@@ -7,12 +7,13 @@ License:             BSD3
 License-file:        LICENSE
 Copyright:           Vincent Hanquez <vincent@snarc.org>
 Author:              Vincent Hanquez <vincent@snarc.org>
-Maintainer:          vincent@snarc.org
+Maintainer:          Mike Pilgrem <public@pilgrem.com>, Kazu Yamamoto <kazu@iij.ad.jp>
 Category:            Data
 stability:           experimental
 Build-Type:          Simple
 Cabal-Version:       >=1.10
-Homepage:            https://github.com/vincenthz/hs-asn1
+Homepage:            https://github.com/mpilgrem/crypton-asn1
+Extra-Doc-Files:     CHANGELOG.md, README.md
 
 Library
   Exposed-modules:   Data.ASN1.Error
@@ -30,7 +31,7 @@ Library
   Build-Depends:     base >= 3 && < 5
                    , bytestring
                    , hourglass >= 0.2.6
-                   , asn1-types >= 0.3.0 && < 0.4
+                   , crypton-asn1-types >= 0.3.0 && < 0.4
   ghc-options:       -Wall -fwarn-tabs
   Default-Language:  Haskell2010
 
@@ -43,13 +44,13 @@ Test-Suite tests-asn1-encoding
                    , mtl
                    , tasty
                    , tasty-quickcheck
-                   , asn1-types
-                   , asn1-encoding
+                   , crypton-asn1-types
+                   , crypton-asn1-encoding
                    , hourglass
   ghc-options:       -Wall -fno-warn-orphans -fno-warn-missing-signatures
   Default-Language:  Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/vincenthz/hs-asn1
+  location: https://github.com/mpilgrem/crypton-asn1
   subdir:   encoding

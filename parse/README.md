@@ -1,0 +1,17 @@
+crypton-asn1-parse
+==================
+
+Originally forked from
+[asn1-parse-0.9.5](https://hackage.haskell.org/package/asn1-parse-0.9.5).
+
+ASN.1 for Haskell
+
+* crypton-asn1-parse : combinator based parsers for ASN.1 types.
+
+History
+-------
+
+The [`asn1-parse`](https://hackage.haskell.org/package/asn1-parse) package was
+originated and then maintained by Vincent Hanquez. For published reasons, he
+does not intend to develop the package further after version 0.9.5 but he also
+does not want to introduce other maintainers.
