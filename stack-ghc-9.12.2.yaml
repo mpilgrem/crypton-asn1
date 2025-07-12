@@ -1,0 +1,7 @@
+snapshot: nightly-2025-07-12 # GHC 9.10.2
+compiler: ghc-9.12.2
+
+packages:
+- encoding
+- parse
+- types
