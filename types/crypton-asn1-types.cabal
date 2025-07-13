@@ -1,33 +1,44 @@
-Name:                crypton-asn1-types
-Version:             0.3.4
-Description:         ASN.1 standard types
-License:             BSD3
-License-file:        LICENSE
-Copyright:           Vincent Hanquez <vincent@snarc.org>
-Author:              Vincent Hanquez <vincent@snarc.org>
-Maintainer:          Mike Pilgrem <public@pilgrem.com>, Kazu Yamamoto <kazu@iij.ad.jp>
-Synopsis:            ASN.1 types
-Build-Type:          Simple
-Category:            Data
-stability:           experimental
-Cabal-Version:       >=1.6
-Homepage:            http://github.com/mpilgrem/crypton-asn1
-Extra-Doc-Files:     CHANGELOG.md, README.md
+cabal-version: 1.18
 
-Library
-  Build-Depends:     base >= 3 && < 5
-                   , bytestring
-                   , memory
-                   , hourglass
+-- This file has been generated from package.yaml by hpack version 0.38.1.
+--
+-- see: https://github.com/sol/hpack
 
-  Exposed-modules:   Data.ASN1.BitArray
-                     Data.ASN1.OID
-                     Data.ASN1.Pretty
-                     Data.ASN1.Types
-                     Data.ASN1.Types.String
-                     Data.ASN1.Types.Lowlevel
-  ghc-options:       -Wall
+name:           crypton-asn1-types
+version:        0.3.4
+synopsis:       ASN.1 types
+description:    ASN.1 standard types
+category:       Data
+stability:      experimental
+homepage:       http://github.com/mpilgrem/crypton-asn1
+bug-reports:    https://github.com/mpilgrem/crypton-asn1/issues
+author:         Vincent Hanquez <vincent@snarc.org>
+maintainer:     Mike Pilgrem <public@pilgrem.com>,
+                Kazu Yamamoto <kazu@iij.ad.jp>
+copyright:      Vincent Hanquez <vincent@snarc.org>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-doc-files:
+    CHANGELOG.md
+    README.md
 
 source-repository head
-  type:     git
-  location: git://github.com/mpilgrem/crypton-asn1
+  type: git
+  location: https://github.com/mpilgrem/crypton-asn1
+
+library
+  exposed-modules:
+      Data.ASN1.BitArray
+      Data.ASN1.OID
+      Data.ASN1.Pretty
+      Data.ASN1.Types
+      Data.ASN1.Types.String
+      Data.ASN1.Types.Lowlevel
+  ghc-options: -Wall
+  build-depends:
+      base >=3 && <5
+    , bytestring
+    , hourglass
+    , memory
+  default-language: Haskell98

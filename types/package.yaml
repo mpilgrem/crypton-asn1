@@ -1,0 +1,37 @@
+spec-version: 0.36.0 # Avoid legacy behaviour of Hpack
+
+name: crypton-asn1-types
+version: 0.3.4
+synopsis: ASN.1 types
+description: |
+  ASN.1 standard types
+copyright: Vincent Hanquez <vincent@snarc.org>
+author: Vincent Hanquez <vincent@snarc.org>
+maintainer:
+- Mike Pilgrem <public@pilgrem.com>
+- Kazu Yamamoto <kazu@iij.ad.jp>
+category: Data
+stability: experimental
+github: mpilgrem/crypton-asn1
+homepage: http://github.com/mpilgrem/crypton-asn1
+extra-doc-files:
+- CHANGELOG.md
+- README.md
+
+language: Haskell98
+
+library:
+  dependencies:
+  - base >= 3 && < 5
+  - bytestring
+  - memory
+  - hourglass
+  exposed-modules:
+  - Data.ASN1.BitArray
+  - Data.ASN1.OID
+  - Data.ASN1.Pretty
+  - Data.ASN1.Types
+  - Data.ASN1.Types.String
+  - Data.ASN1.Types.Lowlevel
+  ghc-options:
+  - -Wall
