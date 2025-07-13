@@ -9,6 +9,8 @@ and this project adheres to the
 ## UNRELEASED
 
 * Move library modules to directory `src`.
+* Change data type `BitArrayOutOfBound` (a single, unary data constructor
+  without strictness annotation) to `newtype`.
 
 ## 0.3.4
 

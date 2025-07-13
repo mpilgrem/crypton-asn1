@@ -43,9 +43,9 @@ pretty SingleLine = prettyPrint
 p :: ([Char] -> t) -> ASN1 -> t
 p put (Boolean b)                        = put ("bool: " ++ show b)
 p put (IntVal i)                         = put ("int: " ++ showHex i "")
-p put (BitString bits)                   = put ("bitstring: " ++ (hexdump $ bitArrayGetData bits))
+p put (BitString bits)                   = put ("bitstring: " ++ hexdump (bitArrayGetData bits))
 p put (OctetString bs)                   = put ("octetstring: " ++ hexdump bs)
-p put (Null)                             = put "null"
+p put Null                               = put "null"
 p put (OID is)                           = put ("OID: " ++ show is)
 p put (Real d)                           = put ("real: " ++ show d)
 p put (Enumerated _)                     = put "enum"

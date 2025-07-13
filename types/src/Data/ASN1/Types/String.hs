@@ -105,7 +105,7 @@ decodeUTF8 b = loop 0 $ B.unpack b
         uncont _ _ _ _ = error "invalid number of bytes for continuation"
         decodeCont :: Word8 -> [Word8] -> Char
         decodeCont iniV l
-            | all isContByte l = toEnum $ foldl (\acc v -> (acc `shiftL` 6) + fromIntegral v) (fromIntegral iniV) $ map (\v -> v .&. 0x3f) l
+            | all isContByte l = toEnum $ foldl (\acc v -> (acc `shiftL` 6) + fromIntegral v) (fromIntegral iniV) $ map (.&. 0x3f) l
             | otherwise        = error "continuation bytes invalid"
         isContByte v = v `testBit` 7 && v `isClear` 6
         isClear v i = not (v `testBit` i)
@@ -163,7 +163,7 @@ decodeUTF32 bs
                     v = (fromIntegral a `shiftL` 24) .|.
                         (fromIntegral b `shiftL` 16) .|.
                         (fromIntegral c `shiftL` 8) .|.
-                        (fromIntegral d)
+                        fromIntegral d
                  in w32ToChar v : fromUTF32 (ofs+4)
 encodeUTF32 :: String -> ByteString
 encodeUTF32 s = B.pack $ concatMap (toUTF32 . fromEnum) s

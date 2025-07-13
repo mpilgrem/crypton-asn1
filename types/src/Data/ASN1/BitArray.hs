@@ -27,7 +27,7 @@ import Data.Typeable
 import Control.Exception (Exception, throw)
 
 -- | throwed in case of out of bounds in the bitarray.
-data BitArrayOutOfBound = BitArrayOutOfBound Word64
+newtype BitArrayOutOfBound = BitArrayOutOfBound Word64
     deriving (Show,Eq,Typeable)
 instance Exception BitArrayOutOfBound
 

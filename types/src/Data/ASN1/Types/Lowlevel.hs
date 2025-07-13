@@ -5,7 +5,6 @@
 -- Stability   : experimental
 -- Portability : unknown
 --
-{-# LANGUAGE BangPatterns #-}
 module Data.ASN1.Types.Lowlevel
     (
     -- * Raw types

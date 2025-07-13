@@ -5,7 +5,6 @@
 -- Stability   : experimental
 -- Portability : unknown
 --
-{-# LANGUAGE DeriveDataTypeable #-}
 module Data.ASN1.OID
     ( OID
     -- * classes
