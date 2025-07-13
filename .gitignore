@@ -5,3 +5,4 @@ dist-newstyle
 # The Haskell Tool Stack-related
 .stack-work
 stack.yaml.lock
+stack-ghc*.yaml.lock
