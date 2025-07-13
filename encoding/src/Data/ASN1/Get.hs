@@ -104,9 +104,7 @@ instance Monad Get where
         let ks' s1 b1 m1 p1 a = unGet (g a) s1 b1 m1 p1 kf ks
          in unGet m s0 b0 m0 p0 kf ks'
 
-#if MIN_VERSION_base(4,13,0)
 instance MonadFail Get where
-#endif
     fail = failDesc
 
 instance MonadPlus Get where

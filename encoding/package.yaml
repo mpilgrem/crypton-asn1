@@ -33,7 +33,7 @@ library:
   - Data.ASN1.Object
   - Data.ASN1.Prim
   dependencies:
-  - base >= 3 && < 5
+  - base >= 4.13 && < 5
   - bytestring
   - hourglass >= 0.2.6
   - crypton-asn1-types >= 0.3.0 && < 0.4
@@ -45,7 +45,7 @@ tests:
     - src
     main: Tests.hs
     dependencies:
-    - base >= 3 && < 7
+    - base >= 4.13 && < 5
     - bytestring
     - mtl
     - tasty

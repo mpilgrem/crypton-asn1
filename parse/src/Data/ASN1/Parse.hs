@@ -56,10 +56,9 @@ instance Alternative ParseASN1 where
         case runP m1 s of
             Left _        -> runP m2 s
             Right (a, s2) -> Right (a, s2)
-#if MIN_VERSION_base(4,9,0)
+
 instance MonadFail ParseASN1 where
     fail = throwParseError
-#endif
 
 get :: ParseASN1 [ASN1]
 get = P $ \stream -> Right (stream, stream)

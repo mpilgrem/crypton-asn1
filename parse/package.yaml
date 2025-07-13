@@ -24,7 +24,7 @@ language: Haskell98
 library:
   source-dirs: src
   dependencies:
-  - base >= 3 && < 5
+  - base >= 4.13 && < 5
   - bytestring
   - crypton-asn1-types >= 0.3 && < 0.4
   - crypton-asn1-encoding >= 0.9

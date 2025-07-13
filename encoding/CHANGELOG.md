@@ -9,6 +9,7 @@ and this project adheres to the
 ## UNRELEASED
 
 * Move library modules to directory `src`.
+* Drop support for GHC < 8.8.
 
 ## 0.9.6
 

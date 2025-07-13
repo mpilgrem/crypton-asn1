@@ -443,16 +443,6 @@ normalize (mantissa, exponent) = (mantissa `shiftR` sh, exponent + sh)
   where
     sh = countTrailingZeros mantissa
 
-#if !(MIN_VERSION_base(4,8,0))
-    countTrailingZeros :: FiniteBits b => b -> Int
-    countTrailingZeros x = go 0
-      where
-        go i | i >= w      = i
-             | testBit x i = i
-             | otherwise   = go (i+1)
-        w = finiteBitSize x
-#endif
-
 bINARY_POSITIVE_NUMBER_ID, bINARY_NEGATIVE_NUMBER_ID :: Word8
 bINARY_POSITIVE_NUMBER_ID = 0x80
 bINARY_NEGATIVE_NUMBER_ID = 0xc0

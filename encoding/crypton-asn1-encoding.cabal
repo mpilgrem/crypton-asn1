@@ -48,7 +48,7 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      base >=3 && <5
+      base >=4.13 && <5
     , bytestring
     , crypton-asn1-types >=0.3.0 && <0.4
     , hourglass >=0.2.6
@@ -75,7 +75,7 @@ test-suite tests-asn1-encoding
       src
   ghc-options: -Wall
   build-depends:
-      base >=3 && <7
+      base >=4.13 && <5
     , bytestring
     , crypton-asn1-encoding
     , crypton-asn1-types
