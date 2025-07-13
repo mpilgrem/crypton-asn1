@@ -31,7 +31,7 @@ module Data.ASN1.Get
 import Control.Applicative ( Alternative (..) )
 import Control.Monad (ap,MonadPlus(..))
 import Data.Maybe (fromMaybe)
-import Foreign
+import Data.Word ( Word64, Word8 )
 
 import qualified Data.ByteString          as B
 

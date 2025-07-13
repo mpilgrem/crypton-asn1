@@ -1,24 +1,24 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-import Test.Tasty.QuickCheck
-import Test.Tasty
+import Test.Tasty.QuickCheck ( Arbitrary (..), Gen, choose, elements, listOf1, oneof, resize, suchThat, testProperty )
+import Test.Tasty ( TestTree, defaultMain, testGroup )
 
 import Data.ASN1.Get (runGet, Result(..))
-import Data.ASN1.BitArray
-import Data.ASN1.Prim
-import Data.ASN1.Serialize
-import Data.ASN1.BinaryEncoding.Parse
-import Data.ASN1.BinaryEncoding.Writer
-import Data.ASN1.BinaryEncoding
-import Data.ASN1.Encoding
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
+import Data.ASN1.BitArray ( BitArray, toBitArray )
+import Data.ASN1.Prim ( mkSmallestLength )
+import Data.ASN1.Serialize ( getHeader, putHeader )
+import Data.ASN1.BinaryEncoding.Parse ( parseLBS )
+import Data.ASN1.BinaryEncoding.Writer (toLazyByteString )
+import Data.ASN1.BinaryEncoding ( DER (..) )
+import Data.ASN1.Encoding ( ASN1Decoding (..), ASN1Encoding (..) )
+import Data.ASN1.Types ( ASN1 (..), ASN1CharacterString (..), ASN1ConstructionType (..), ASN1StringEncoding (..), ASN1TimeType (..), OID, asn1CharacterString )
+import Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Event (..), ASN1Header (..), ASN1Length (..), ASN1Tag )
 
-import Data.Hourglass
+import Data.Hourglass ( Date (..), DateTime (..), Elapsed (..), Hours (..), Minutes (..), Month (..), Seconds (..), TimeOfDay (..), TimezoneOffset (..), timeConvert, timezone_UTC )
 
 import qualified Data.ByteString as B
 
-import Control.Monad
+import Control.Monad ( liftM4, replicateM )
 
 instance Arbitrary ASN1Class where
         arbitrary = elements [ Universal, Application, Context, Private ]

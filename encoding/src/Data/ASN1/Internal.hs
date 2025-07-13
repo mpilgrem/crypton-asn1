@@ -15,8 +15,8 @@ module Data.ASN1.Internal
     , putVarEncodingIntegral
     ) where
 
-import Data.Word
-import Data.Bits
+import Data.Word ( Word8 )
+import Data.Bits ( Bits, (.&.), (.|.), complement, shiftL, shiftR, testBit )
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import Data.List.NonEmpty ( NonEmpty (..), (<|) )

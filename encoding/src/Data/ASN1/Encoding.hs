@@ -19,9 +19,9 @@ module Data.ASN1.Encoding
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
-import Data.ASN1.Stream
-import Data.ASN1.Types
-import Data.ASN1.Error
+import Data.ASN1.Stream ( ASN1Repr )
+import Data.ASN1.Types ( ASN1 )
+import Data.ASN1.Error ( ASN1Error )
 
 -- | Describe an ASN1 decoding, that transform a bytestream into an asn1stream
 class ASN1Decoding a where

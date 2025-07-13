@@ -44,16 +44,16 @@ module Data.ASN1.Prim
     , putOID
     ) where
 
-import Data.ASN1.Internal
-import Data.ASN1.Stream
-import Data.ASN1.BitArray
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
-import Data.ASN1.Error
-import Data.ASN1.Serialize
-import Data.Bits
+import Data.ASN1.Internal ( bytesOfInt, intOfBytes, putVarEncodingIntegral, uintOfBytes )
+import Data.ASN1.Stream ( getConstructedEnd )
+import Data.ASN1.BitArray ( BitArray (..), toBitArray )
+import Data.ASN1.Types ( ASN1 (..), ASN1CharacterString (..), ASN1ConstructionType (..), ASN1StringEncoding (..), ASN1TimeType (..) )
+import Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Event (..), ASN1Header (..), ASN1Length (..) )
+import Data.ASN1.Error ( ASN1Error (..) )
+import Data.ASN1.Serialize ( putHeader )
+import Data.Bits ( (.&.), (.|.), clearBit, countTrailingZeros, shiftL, shiftR, testBit )
 import Data.Maybe ( isJust )
-import Data.Word
+import Data.Word ( Word64, Word8 )
 import Data.List (unfoldr)
 import qualified Data.List.NonEmpty as NE
 import Data.ByteString (ByteString)
@@ -61,9 +61,9 @@ import Data.Char (ord, isDigit)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Unsafe as B
-import Data.Hourglass
+import Data.Hourglass ( Date (..), DateTime (..), NanoSeconds (..), TimezoneOffset (..), timeParseE, timePrint, timezone_UTC, todNSec )
 import Control.Arrow (first)
-import Control.Monad
+import Control.Monad ( unless )
 import Prelude hiding ( exp, exponent )
 
 encodeHeader :: Bool -> ASN1Length -> ASN1 -> ASN1Header

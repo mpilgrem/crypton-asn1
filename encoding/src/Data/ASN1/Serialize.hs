@@ -10,15 +10,14 @@
 module Data.ASN1.Serialize (getHeader, putHeader) where
 
 import qualified Data.ByteString as B
-import Data.ASN1.Get
-import Data.ASN1.Internal
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
-import Data.Bits
+import Data.ASN1.Get ( Get, getBytes, getWord8 )
+import Data.ASN1.Internal ( bytesOfUInt, putVarEncodingIntegral )
+import Data.ASN1.Types.Lowlevel ( ASN1Class, ASN1Header (..), ASN1Length (..), ASN1Tag )
+import Data.Bits ( (.&.), (.|.), clearBit, shiftL, shiftR, testBit )
 import Data.List.NonEmpty ( NonEmpty (..), (<|) )
 import qualified Data.List.NonEmpty as NE
-import Data.Word
-import Control.Monad
+import Data.Word ( Word8 )
+import Control.Monad ( when )
 
 -- | Helper function while base < 4.15.0.0 (GHC < 9.0.1) is supported.
 singletonNE :: a -> NonEmpty a

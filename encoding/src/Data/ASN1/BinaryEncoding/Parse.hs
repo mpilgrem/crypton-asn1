@@ -24,12 +24,11 @@ import Control.Arrow (first)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
-import Data.ASN1.Error
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
-import Data.ASN1.Get
-import Data.ASN1.Serialize
-import Data.Word
+import Data.ASN1.Error ( ASN1Error (..) )
+import Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Event (..), ASN1Header (..), ASN1Length (..) )
+import Data.ASN1.Get ( Result (..), getBytes, runGetPos )
+import Data.ASN1.Serialize ( getHeader )
+import Data.Word ( Word64 )
 import Data.Maybe (fromJust)
 
 -- | nothing means the parser stop this construction on

@@ -9,4 +9,4 @@ module Data.ASN1.Object {-# DEPRECATED "Use Data.ASN1.Types instead" #-}
     ( ASN1Object(..)
     ) where
 
-import Data.ASN1.Types
+import Data.ASN1.Types ( ASN1Object (..) )

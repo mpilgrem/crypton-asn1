@@ -26,7 +26,6 @@ module Data.ASN1.BinaryEncoding.Raw
 
     ) where
 
-import Data.ASN1.BinaryEncoding.Parse
-import Data.ASN1.BinaryEncoding.Writer
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
+import Data.ASN1.BinaryEncoding.Parse ( parseBS, parseLBS )
+import Data.ASN1.BinaryEncoding.Writer ( toByteString, toLazyByteString )
+import Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Event (..), ASN1Header (..), ASN1Length (..), ASN1Tag )

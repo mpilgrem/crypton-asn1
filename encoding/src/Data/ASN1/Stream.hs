@@ -11,8 +11,8 @@ module Data.ASN1.Stream
     , getConstructedEndRepr
     ) where
 
-import Data.ASN1.Types
-import Data.ASN1.Types.Lowlevel
+import Data.ASN1.Types ( ASN1 (..) )
+import Data.ASN1.Types.Lowlevel ( ASN1Event )
 
 {- associate a list of asn1 event with an ASN1 type.
  - it's sometimes required to know the exact byte sequence leading to an ASN1 type:

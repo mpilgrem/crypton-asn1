@@ -15,8 +15,8 @@ module Data.ASN1.BinaryEncoding.Writer
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
-import Data.ASN1.Types.Lowlevel
-import Data.ASN1.Serialize
+import Data.ASN1.Types.Lowlevel ( ASN1Event (..), ASN1Header (..), ASN1Length (..) )
+import Data.ASN1.Serialize ( putHeader )
 
 -- | transform a list of ASN1 Events into a strict bytestring
 toByteString :: [ASN1Event] -> ByteString
