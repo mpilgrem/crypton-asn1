@@ -4,7 +4,8 @@ name: crypton-asn1-types
 version: 0.3.4
 synopsis: ASN.1 types
 description: |
-  ASN.1 standard types
+  A library providing types representing the Abstract Syntax Notation One
+  (ASN.1) standard.
 copyright: Vincent Hanquez <vincent@snarc.org>
 author: Vincent Hanquez <vincent@snarc.org>
 maintainer:

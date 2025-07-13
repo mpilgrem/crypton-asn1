@@ -1,44 +1,51 @@
--- |
--- Module      : Data.ASN1.Pretty
--- License     : BSD-style
--- Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
--- Stability   : experimental
--- Portability : unknown
---
+{- |
+Module      : Data.ASN1.Pretty
+License     : BSD-style
+Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
+Stability   : experimental
+Portability : unknown
+-}
+
 module Data.ASN1.Pretty
-    ( pretty
-    , PrettyType(..)
-    ) where
+  ( pretty
+  , PrettyType (..)
+  ) where
 
-import           Data.ASN1.Types ( ASN1 (..), ASN1CharacterString (..), ASN1ConstructionType (..), ASN1StringEncoding (..), ASN1TimeType (..) )
 import           Data.ASN1.BitArray ( bitArrayGetData )
-import           Data.ByteArray.Encoding (convertToBase, Base(..))
-import           Data.ByteString (ByteString)
-import           Numeric (showHex)
+import           Data.ASN1.Types
+                   ( ASN1 (..), ASN1CharacterString (..)
+                   , ASN1ConstructionType (..), ASN1StringEncoding (..)
+                   , ASN1TimeType (..)
+                   )
+import           Data.ByteArray.Encoding ( Base (..), convertToBase )
+import           Data.ByteString ( ByteString )
+import           Numeric ( showHex )
 
-data PrettyType = Multiline Int -- Offset where to start
-                | SingleLine
-    deriving (Show,Eq)
+data PrettyType =
+    Multiline Int -- Offset where to start
+  | SingleLine
+  deriving (Eq, Show)
 
--- | Pretty Print a list of ASN.1 element
-pretty :: PrettyType -- ^ indent level in space character
-       -> [ASN1]     -- ^ stream of ASN1
-       -> String
+-- | Pretty Print a list of ASN.1 element.
+pretty ::
+     PrettyType -- ^ Indent level in space character.
+  -> [ASN1]     -- ^ Stream of ASN.1.
+  -> String
 pretty (Multiline at) = prettyPrint at
-  where
-    indent n = replicate n ' '
+ where
+  indent n = replicate n ' '
 
-    prettyPrint _ []                 = ""
-    prettyPrint n (x@(Start _) : xs) = indent n     ++ p id x ++ prettyPrint (n+1) xs
-    prettyPrint n (x@(End _) : xs)   = indent (n-1) ++ p id x ++ prettyPrint (n-1) xs
-    prettyPrint n (x : xs)           = indent n     ++ p id x ++ prettyPrint n xs
+  prettyPrint _ []                 = ""
+  prettyPrint n (x@(Start _) : xs) = indent n     ++ p id x ++ prettyPrint (n+1) xs
+  prettyPrint n (x@(End _) : xs)   = indent (n-1) ++ p id x ++ prettyPrint (n-1) xs
+  prettyPrint n (x : xs)           = indent n     ++ p id x ++ prettyPrint n xs
 
 pretty SingleLine = prettyPrint
-  where
-    prettyPrint []                 = ""
-    prettyPrint (x@(Start _) : xs) = p id x ++ "," ++ prettyPrint xs
-    prettyPrint (x@(End _) : xs)   = p id x ++ "," ++ prettyPrint xs
-    prettyPrint (x : xs)           = p id x ++ "," ++ prettyPrint xs
+ where
+  prettyPrint []                 = ""
+  prettyPrint (x@(Start _) : xs) = p id x ++ "," ++ prettyPrint xs
+  prettyPrint (x@(End _) : xs)   = p id x ++ "," ++ prettyPrint xs
+  prettyPrint (x : xs)           = p id x ++ "," ++ prettyPrint xs
 
 p :: ([Char] -> t) -> ASN1 -> t
 p put (Boolean b)                        = put ("bool: " ++ show b)
@@ -61,18 +68,18 @@ p put (ASN1Time TimeGeneralized time tz) = put ("generalizedtime: " ++ show time
 p put (Other tc tn x)                    = put ("other(" ++ show tc ++ "," ++ show tn ++ "," ++ show x ++ ")")
 
 putCS :: ([Char] -> t) -> ASN1CharacterString -> t
-putCS put (ASN1CharacterString UTF8 t)         = put ("utf8string:" ++ show t)
-putCS put (ASN1CharacterString Numeric bs)     = put ("numericstring:" ++ hexdump bs)
-putCS put (ASN1CharacterString Printable t)    = put ("printablestring: " ++ show t)
-putCS put (ASN1CharacterString T61 bs)         = put ("t61string:" ++ show bs)
-putCS put (ASN1CharacterString VideoTex bs)    = put ("videotexstring:" ++ hexdump bs)
-putCS put (ASN1CharacterString IA5 bs)         = put ("ia5string:" ++ show bs)
-putCS put (ASN1CharacterString Graphic bs)     = put ("graphicstring:" ++ hexdump bs)
-putCS put (ASN1CharacterString Visible bs)     = put ("visiblestring:" ++ hexdump bs)
-putCS put (ASN1CharacterString General bs)     = put ("generalstring:" ++ hexdump bs)
-putCS put (ASN1CharacterString UTF32 t)        = put ("universalstring:" ++ show t)
-putCS put (ASN1CharacterString Character bs)   = put ("characterstring:" ++ hexdump bs)
-putCS put (ASN1CharacterString BMP t)          = put ("bmpstring: " ++ show t)
+putCS put (ASN1CharacterString UTF8 t)       = put ("utf8string:" ++ show t)
+putCS put (ASN1CharacterString Numeric bs)   = put ("numericstring:" ++ hexdump bs)
+putCS put (ASN1CharacterString Printable t)  = put ("printablestring: " ++ show t)
+putCS put (ASN1CharacterString T61 bs)       = put ("t61string:" ++ show bs)
+putCS put (ASN1CharacterString VideoTex bs)  = put ("videotexstring:" ++ hexdump bs)
+putCS put (ASN1CharacterString IA5 bs)       = put ("ia5string:" ++ show bs)
+putCS put (ASN1CharacterString Graphic bs)   = put ("graphicstring:" ++ hexdump bs)
+putCS put (ASN1CharacterString Visible bs)   = put ("visiblestring:" ++ hexdump bs)
+putCS put (ASN1CharacterString General bs)   = put ("generalstring:" ++ hexdump bs)
+putCS put (ASN1CharacterString UTF32 t)      = put ("universalstring:" ++ show t)
+putCS put (ASN1CharacterString Character bs) = put ("characterstring:" ++ hexdump bs)
+putCS put (ASN1CharacterString BMP t)        = put ("bmpstring: " ++ show t)
 
 hexdump :: ByteString -> String
 hexdump bs = show (convertToBase Base16 bs :: ByteString)

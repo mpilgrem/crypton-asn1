@@ -1,80 +1,86 @@
--- |
--- Module      : Data.ASN1.BitArray
--- License     : BSD-style
--- Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
--- Stability   : experimental
--- Portability : unknown
---
+{- |
+Module      : Data.ASN1.BitArray
+License     : BSD-style
+Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
+Stability   : experimental
+Portability : unknown
+-}
+
 module Data.ASN1.BitArray
-    ( BitArray(..)
-    , BitArrayOutOfBound(..)
-    , bitArrayLength
-    , bitArrayGetBit
-    , bitArraySetBitValue
-    , bitArraySetBit
-    , bitArrayClearBit
-    , bitArrayGetData
-    , toBitArray
-    ) where
+  ( BitArray (..)
+  , BitArrayOutOfBound (..)
+  , bitArrayLength
+  , bitArrayGetBit
+  , bitArraySetBitValue
+  , bitArraySetBit
+  , bitArrayClearBit
+  , bitArrayGetData
+  , toBitArray
+  ) where
 
-import Data.Bits ( clearBit, setBit, testBit )
-import Data.Word ( Word64 )
-import Data.Maybe ( fromJust )
-import Data.ByteString (ByteString)
+import           Control.Exception ( Exception, throw )
+import           Data.Bits ( clearBit, setBit, testBit )
+import           Data.ByteString ( ByteString )
 import qualified Data.ByteString as B
-import Control.Exception (Exception, throw)
+import           Data.Maybe ( fromJust )
+import           Data.Word ( Word64 )
 
--- | throwed in case of out of bounds in the bitarray.
+-- | Thrown in case of out of bounds in the bitarray.
 newtype BitArrayOutOfBound = BitArrayOutOfBound Word64
-    deriving (Show,Eq)
+  deriving (Eq, Show)
+
 instance Exception BitArrayOutOfBound
 
--- | represent a bitarray / bitmap
+-- | Represent a bitarray / bitmap.
 --
--- the memory representation start at bit 0
+-- The memory representation starts at bit 0.
 data BitArray = BitArray Word64 ByteString
-    deriving (Show,Eq)
+  deriving (Eq, Show)
 
--- | returns the length of bits in this bitarray
+-- | Returns the length of bits in this bitarray.
 bitArrayLength :: BitArray -> Word64
 bitArrayLength (BitArray l _) = l
 
 bitArrayOutOfBound :: Word64 -> a
 bitArrayOutOfBound n = throw $ BitArrayOutOfBound n
 
--- | get the nth bits
+-- | Get the nth bits.
 bitArrayGetBit :: BitArray -> Word64 -> Bool
 bitArrayGetBit (BitArray l d) n
-    | n >= l    = bitArrayOutOfBound n
-    | otherwise = flip testBit (7-fromIntegral bitn) $ B.index d (fromIntegral offset)
-        where (offset, bitn) = n `divMod` 8
+  | n >= l    = bitArrayOutOfBound n
+  | otherwise =
+      flip testBit (7-fromIntegral bitn) $ B.index d (fromIntegral offset)
+ where
+  (offset, bitn) = n `divMod` 8
 
--- | set the nth bit to the value specified
+-- | Set the nth bit to the value specified.
 bitArraySetBitValue :: BitArray -> Word64 -> Bool -> BitArray
 bitArraySetBitValue (BitArray l d) n v
-    | n >= l    = bitArrayOutOfBound n
-    | otherwise =
-        let (before,after) = B.splitAt (fromIntegral offset) d in
-        -- array bound check before prevent fromJust from failing.
-        let (w,remaining) = fromJust $ B.uncons after in
-        BitArray l (before `B.append` (setter w (7-fromIntegral bitn) `B.cons` remaining))
-  where
-        (offset, bitn) = n `divMod` 8
-        setter = if v then setBit else clearBit
+  | n >= l    = bitArrayOutOfBound n
+  | otherwise =
+      let (before, after) = B.splitAt (fromIntegral offset) d
+      in
+          -- array bound check before prevent fromJust from failing.
+          let (w, remaining) = fromJust $ B.uncons after
+              remaining' = setter w (7-fromIntegral bitn) `B.cons` remaining
+          in  BitArray l (before `B.append` remaining')
+ where
+  (offset, bitn) = n `divMod` 8
+  setter = if v then setBit else clearBit
 
--- | set the nth bits
+-- | Set the nth bit.
 bitArraySetBit :: BitArray -> Word64 -> BitArray
 bitArraySetBit bitarray n = bitArraySetBitValue bitarray n True
 
--- | clear the nth bits
+-- | Clear the nth bit.
 bitArrayClearBit :: BitArray -> Word64 -> BitArray
 bitArrayClearBit bitarray n = bitArraySetBitValue bitarray n False
 
--- | get padded bytestring of the bitarray
+-- | Get padded bytestring from the bitarray.
 bitArrayGetData :: BitArray -> ByteString
 bitArrayGetData (BitArray _ d) = d
 
--- | number of bit to skip at the end (padding)
+-- | Number of bits to skip at the end (padding).
 toBitArray :: ByteString -> Int -> BitArray
 toBitArray l toSkip =
-    BitArray (fromIntegral (B.length l * 8 - fromIntegral toSkip)) l
+  BitArray (fromIntegral (B.length l * 8 - fromIntegral toSkip)) l
