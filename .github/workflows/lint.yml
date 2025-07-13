@@ -24,6 +24,7 @@ jobs:
     - name: Apply HLint
       run: |
         set -ex
-        hlint types
-        hlint parse
-        hlint encoding
+        hlint types/src
+        hlint parse/src
+        hlint encoding/src
+        hlint encoding/tests

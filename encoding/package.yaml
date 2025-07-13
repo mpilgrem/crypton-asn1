@@ -20,6 +20,7 @@ extra-doc-files:
 - README.md
 
 library:
+  source-dirs: src
   exposed-modules:
   - Data.ASN1.Error
   - Data.ASN1.BinaryEncoding
@@ -28,12 +29,6 @@ library:
   - Data.ASN1.Stream
   - Data.ASN1.Object
   - Data.ASN1.Prim
-  other-modules:
-  - Data.ASN1.BinaryEncoding.Parse
-  - Data.ASN1.BinaryEncoding.Writer
-  - Data.ASN1.Internal
-  - Data.ASN1.Serialize
-  - Data.ASN1.Get
   dependencies:
   - base >= 3 && < 5
   - bytestring
@@ -47,7 +42,7 @@ tests:
   tests-asn1-encoding:
     source-dirs:
     - tests
-    - .
+    - src
     main: Tests.hs
     dependencies:
     - base >= 3 && < 7

@@ -22,6 +22,7 @@ extra-doc-files:
 language: Haskell98
 
 library:
+  source-dirs: src
   dependencies:
   - base >= 3 && < 5
   - bytestring

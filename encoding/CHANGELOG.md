@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELEASED
+
+* Move library modules to directory `src`.
+
 ## 0.9.6
 
 * Rename `asn1-encoding-0.9.6` package as `crypton-asn1-encoding-0.9.6`.

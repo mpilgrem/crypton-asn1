@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELEASED
+
+* Move library modules to directory `src`.
+
 ## 0.3.4
 
 * Rename `asn1-types-0.3.4` package as `crypton-asn1-types-0.3.4`.

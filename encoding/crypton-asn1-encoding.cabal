@@ -41,9 +41,11 @@ library
   other-modules:
       Data.ASN1.BinaryEncoding.Parse
       Data.ASN1.BinaryEncoding.Writer
+      Data.ASN1.Get
       Data.ASN1.Internal
       Data.ASN1.Serialize
-      Data.ASN1.Get
+  hs-source-dirs:
+      src
   ghc-options: -Wall -fwarn-tabs
   build-depends:
       base >=3 && <5
@@ -70,7 +72,7 @@ test-suite tests-asn1-encoding
       Data.ASN1.Stream
   hs-source-dirs:
       tests
-      ./
+      src
   ghc-options: -Wall -fno-warn-orphans -fno-warn-missing-signatures
   build-depends:
       base >=3 && <7
