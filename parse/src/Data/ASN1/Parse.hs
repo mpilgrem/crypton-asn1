@@ -25,8 +25,8 @@ module Data.ASN1.Parse
     , getMany
     ) where
 
-import Data.ASN1.Types
-import Data.ASN1.Stream
+import Data.ASN1.Types ( ASN1 (..), ASN1ConstructionType (..), ASN1Object (..) )
+import Data.ASN1.Stream ( getConstructedEnd )
 import Control.Applicative
 import Control.Arrow (first)
 import Control.Monad (liftM2)
