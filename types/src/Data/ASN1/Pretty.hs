@@ -1,9 +1,13 @@
+{-# LANGUAGE CPP #-}
+
 {- |
 Module      : Data.ASN1.Pretty
 License     : BSD-style
 Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
 Stability   : experimental
 Portability : unknown
+
+Types and functions to pretty print ASN.1 elements.
 -}
 
 module Data.ASN1.Pretty
@@ -17,18 +21,33 @@ import           Data.ASN1.Types
                    , ASN1ConstructionType (..), ASN1StringEncoding (..)
                    , ASN1TimeType (..)
                    )
-import           Data.ByteArray.Encoding ( Base (..), convertToBase )
+#if MIN_VERSION_base16(1,0,0)
+import           Data.Base16.Types ( extractBase16 )
+#endif
 import           Data.ByteString ( ByteString )
+import           Data.ByteString.Base16 ( encodeBase16' )
 import           Numeric ( showHex )
 
+-- | A helper function while base16 < 1.0 is supported.
+encodeBase16 :: ByteString -> ByteString
+#if MIN_VERSION_base16(1,0,0)
+encodeBase16 = extractBase16 . encodeBase16'
+#else
+encodeBase16 = encodeBase16'
+#endif
+
+-- | Type representing approaches to formatting.
 data PrettyType =
-    Multiline Int -- Offset where to start
+    Multiline Int
+    -- ^ Increase indentation following each 'Start' object and decrease
+    -- following each 'End' object. The 'Int' is the initial indentation.
   | SingleLine
+    -- ^ No indentation.
   deriving (Eq, Show)
 
--- | Pretty Print a list of ASN.1 element.
+-- | Pretty print a list of ASN.1 elements.
 pretty ::
-     PrettyType -- ^ Indent level in space character.
+     PrettyType -- ^ The approach to formatting.
   -> [ASN1]     -- ^ Stream of ASN.1.
   -> String
 pretty (Multiline at) = prettyPrint at
@@ -82,4 +101,4 @@ putCS put (ASN1CharacterString Character bs) = put ("characterstring:" ++ hexdum
 putCS put (ASN1CharacterString BMP t)        = put ("bmpstring: " ++ show t)
 
 hexdump :: ByteString -> String
-hexdump bs = show (convertToBase Base16 bs :: ByteString)
+hexdump bs = show (encodeBase16 bs)

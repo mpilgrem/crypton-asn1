@@ -7,7 +7,8 @@ cabal-version: 1.18
 name:           crypton-asn1-types
 version:        0.3.4
 synopsis:       ASN.1 types
-description:    ASN.1 standard types
+description:    A library providing types representing the Abstract Syntax Notation One
+                (ASN.1) standard.
 category:       Data
 stability:      experimental
 homepage:       http://github.com/mpilgrem/crypton-asn1
@@ -40,7 +41,7 @@ library
   ghc-options: -Wall
   build-depends:
       base >=3 && <5
+    , base16
     , bytestring
     , hourglass
-    , memory
   default-language: Haskell98

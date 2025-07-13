@@ -11,6 +11,8 @@ and this project adheres to the
 * Move library modules to directory `src`.
 * Change data type `BitArrayOutOfBound` (a single, unary data constructor
   without strictness annotation) to `newtype`.
+* Depend on the `base16` package, remove direct dependency on the `memory`
+  package and the indirect dependency on the `basement` package.
 
 ## 0.3.4
 

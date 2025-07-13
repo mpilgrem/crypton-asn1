@@ -8,15 +8,15 @@ Portability : unknown
 
 module Data.ASN1.Types.Lowlevel
   ( -- * Raw types
-    ASN1Class(..)
+    ASN1Class (..)
   , ASN1Tag
-  , ASN1Length(..)
-  , ASN1Header(..)
+  , ASN1Length (..)
+  , ASN1Header (..)
     -- * Events types
-  , ASN1Event(..)
+  , ASN1Event (..)
   ) where
 
-import Data.ByteString (ByteString)
+import           Data.ByteString ( ByteString )
 
 -- | Element class.
 data ASN1Class =

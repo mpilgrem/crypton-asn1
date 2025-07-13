@@ -25,8 +25,8 @@ library:
   source-dirs: src
   dependencies:
   - base >= 3 && < 5
+  - base16
   - bytestring
-  - memory
   - hourglass
   exposed-modules:
   - Data.ASN1.BitArray
