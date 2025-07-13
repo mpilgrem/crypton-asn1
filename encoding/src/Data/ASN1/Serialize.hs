@@ -3,7 +3,7 @@
 -- |
 -- Module      : Data.ASN1.Serialize
 -- License     : BSD-style
--- Maintainer  : Vincent Hanquez <vincent@snarc.org>
+-- Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
 -- Stability   : experimental
 -- Portability : unknown
 --
