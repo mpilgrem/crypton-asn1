@@ -14,12 +14,12 @@ module Data.ASN1.Types.String
     , asn1CharacterToString
     ) where
 
-import Data.String
+import Data.String ( IsString (..) )
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
-import Data.Bits
-import Data.Word
+import Data.Bits ( (.&.), (.|.), shiftL, shiftR, testBit )
+import Data.Word ( Word16, Word32, Word8 )
 
 -- a note on T61 encodings. The actual specification of a T61 character set seems
 -- to be lost in time, as such it will be considered an ascii like encoding.

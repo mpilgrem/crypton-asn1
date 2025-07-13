@@ -20,11 +20,11 @@ module Data.ASN1.Types
     , module Data.ASN1.OID
     ) where
 
-import Data.Hourglass
-import Data.ASN1.BitArray
-import Data.ASN1.OID
-import Data.ASN1.Types.Lowlevel
-import Data.ASN1.Types.String
+import Data.Hourglass ( DateTime, TimezoneOffset )
+import Data.ASN1.BitArray ( BitArray )
+import Data.ASN1.OID ( OID )
+import Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Tag )
+import Data.ASN1.Types.String ( ASN1CharacterString (..), ASN1StringEncoding (..), asn1CharacterString, asn1CharacterToString )
 import Data.ByteString (ByteString)
 
 -- | Define the type of container

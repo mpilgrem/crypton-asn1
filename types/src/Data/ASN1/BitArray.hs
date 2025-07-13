@@ -17,9 +17,9 @@ module Data.ASN1.BitArray
     , toBitArray
     ) where
 
-import Data.Bits
-import Data.Word
-import Data.Maybe
+import Data.Bits ( clearBit, setBit, testBit )
+import Data.Word ( Word64 )
+import Data.Maybe ( fromJust )
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import Control.Exception (Exception, throw)

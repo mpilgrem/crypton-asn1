@@ -10,8 +10,8 @@ module Data.ASN1.Pretty
     , PrettyType(..)
     ) where
 
-import           Data.ASN1.Types
-import           Data.ASN1.BitArray
+import           Data.ASN1.Types ( ASN1 (..), ASN1CharacterString (..), ASN1ConstructionType (..), ASN1StringEncoding (..), ASN1TimeType (..) )
+import           Data.ASN1.BitArray ( bitArrayGetData )
 import           Data.ByteArray.Encoding (convertToBase, Base(..))
 import           Data.ByteString (ByteString)
 import           Numeric (showHex)
