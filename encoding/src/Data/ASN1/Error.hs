@@ -5,7 +5,6 @@
 -- Stability   : experimental
 -- Portability : unknown
 --
-{-# LANGUAGE DeriveDataTypeable #-}
 module Data.ASN1.Error
     (
     -- * Errors types
@@ -13,7 +12,6 @@ module Data.ASN1.Error
     ) where
 
 import Control.Exception (Exception)
-import Data.Typeable
 
 -- | Possible errors during parsing operations
 data ASN1Error = StreamUnexpectedEOC         -- ^ Unexpected EOC in the stream.
@@ -26,6 +24,6 @@ data ASN1Error = StreamUnexpectedEOC         -- ^ Unexpected EOC in the stream.
                | TypeDecodingFailed String   -- ^ Decoding of a knowed type failed.
                | TypePrimitiveInvalid String -- ^ Invalid primitive type
                | PolicyFailed String String -- ^ Policy failed including the name of the policy and the reason.
-               deriving (Typeable, Show, Eq)
+               deriving (Show, Eq)
 
 instance Exception ASN1Error

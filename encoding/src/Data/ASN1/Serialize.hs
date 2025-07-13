@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- |
 -- Module      : Data.ASN1.Serialize
 -- License     : BSD-style
@@ -17,6 +19,14 @@ import Data.List.NonEmpty ( NonEmpty (..), (<|) )
 import qualified Data.List.NonEmpty as NE
 import Data.Word
 import Control.Monad
+
+-- | Helper function while base < 4.15.0.0 (GHC < 9.0.1) is supported.
+singletonNE :: a -> NonEmpty a
+#if MIN_VERSION_base(4,15,0)
+singletonNE = NE.singleton
+#else
+singletonNE a = a :| []
+#endif
 
 -- | parse an ASN1 header
 getHeader :: Get ASN1Header
@@ -85,11 +95,11 @@ putHeader (ASN1Header cl tag pc len) = B.concat
 putLength :: ASN1Length -> NonEmpty Word8
 putLength (LenShort i)
     | i < 0 || i > 0x7f = error "putLength: short length is not between 0x0 and 0x80"
-    | otherwise         = NE.singleton (fromIntegral i)
+    | otherwise         = singletonNE (fromIntegral i)
 putLength (LenLong _ i)
     | i < 0     = error "putLength: long length is negative"
     | otherwise = lenbytes <| lw
         where
             lw       = bytesOfUInt $ fromIntegral i
             lenbytes = fromIntegral (length lw .|. 0x80)
-putLength LenIndefinite = NE.singleton 0x80
+putLength LenIndefinite = singletonNE 0x80

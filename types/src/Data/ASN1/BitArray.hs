@@ -5,7 +5,6 @@
 -- Stability   : experimental
 -- Portability : unknown
 --
-{-# LANGUAGE DeriveDataTypeable #-}
 module Data.ASN1.BitArray
     ( BitArray(..)
     , BitArrayOutOfBound(..)
@@ -23,12 +22,11 @@ import Data.Word
 import Data.Maybe
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
-import Data.Typeable
 import Control.Exception (Exception, throw)
 
 -- | throwed in case of out of bounds in the bitarray.
 newtype BitArrayOutOfBound = BitArrayOutOfBound Word64
-    deriving (Show,Eq,Typeable)
+    deriving (Show,Eq)
 instance Exception BitArrayOutOfBound
 
 -- | represent a bitarray / bitmap

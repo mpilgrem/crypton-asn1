@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- |
 -- Module      : Data.ASN1.Internal
 -- License     : BSD-style
@@ -20,6 +22,14 @@ import qualified Data.ByteString as B
 import Data.List.NonEmpty ( NonEmpty (..), (<|) )
 import qualified Data.List.NonEmpty as NE
 
+-- | Helper function while base < 4.15.0.0 (GHC < 9.0.1) is supported.
+singletonNE :: a -> NonEmpty a
+#if MIN_VERSION_base(4,15,0)
+singletonNE = NE.singleton
+#else
+singletonNE a = a :| []
+#endif
+
 {- | uintOfBytes returns the number of bytes and the unsigned integer represented by the bytes -}
 uintOfBytes :: ByteString -> (Int, Integer)
 uintOfBytes b = (B.length b, B.foldl (\acc n -> (acc `shiftL` 8) + fromIntegral n) 0 b)
@@ -29,7 +39,7 @@ bytesOfUInt :: Integer -> NonEmpty Word8
 bytesOfUInt x = NE.reverse (list x)
  where
   list i = if i <= 0xff
-    then NE.singleton (fromIntegral i)
+    then singletonNE (fromIntegral i)
     else (fromIntegral i .&. 0xff) <| list (i `shiftR` 8)
 
 {- | intOfBytes returns the number of bytes in the list and
@@ -47,7 +57,7 @@ intOfBytes b
 bytesOfInt :: Integer -> NonEmpty Word8
 bytesOfInt i
     | i > 0      = if testBit (NE.head uints) 7 then 0 <| uints else uints
-    | i == 0     = NE.singleton 0
+    | i == 0     = singletonNE 0
     | otherwise  = if testBit (NE.head nints) 7 then nints else 0xff <| nints
  where
   uints = bytesOfUInt (abs i)
