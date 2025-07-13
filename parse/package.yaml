@@ -1,0 +1,33 @@
+spec-version: 0.36.0  # Avoid legacy behaviour of Hpack
+
+name: crypton-asn1-parse
+version: 0.9.5
+synopsis: Simple monadic parser for ASN1 stream types.
+description: |
+  Simple monadic parser for ASN1 stream types, when ASN1 pattern matching is not
+  convenient.
+copyright: Vincent Hanquez <vincent@snarc.org>
+author: Vincent Hanquez <vincent@snarc.org>
+maintainer:
+- Mike Pilgrem <public@pilgrem.com>
+- Kazu Yamamoto <kazu@iij.ad.jp>
+category: Data
+stability: experimental
+github: mpilgrem/crypton-asn1/parse
+homepage: https://github.com/mpilgrem/crypton-asn1
+extra-doc-files:
+- CHANGELOG.md
+- README.md
+
+language: Haskell98
+
+library:
+  dependencies:
+  - base >= 3 && < 5
+  - bytestring
+  - crypton-asn1-types >= 0.3 && < 0.4
+  - crypton-asn1-encoding >= 0.9
+  exposed-modules:
+  - Data.ASN1.Parse
+  ghc-options:
+  - -Wall
