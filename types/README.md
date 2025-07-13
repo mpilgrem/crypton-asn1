@@ -4,9 +4,8 @@ crypton-asn1-types
 Originally forked from
 [asn1-types-0.3.4](https://hackage.haskell.org/package/asn1-types-0.3.4).
 
-ASN.1 for Haskell
-
-* crypton-asn1-types : basic types for ASN.1 representation.
+A library providing types representing the Abstract Syntax Notation One (ASN.1)
+standard.
 
 History
 -------
