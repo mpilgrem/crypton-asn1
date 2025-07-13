@@ -6,7 +6,6 @@
 -- Portability : unknown
 --
 -- A parser combinator for ASN1 Stream.
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE CPP #-}
 module Data.ASN1.Parse
     ( ParseASN1
@@ -31,14 +30,11 @@ import Data.ASN1.Stream
 import Control.Applicative
 import Control.Arrow (first)
 import Control.Monad (liftM2)
-#if MIN_VERSION_base(4,9,0)
-import Control.Monad.Fail
-#endif
 
 newtype ParseASN1 a = P { runP :: [ASN1] -> Either String (a, [ASN1]) }
 
 instance Functor ParseASN1 where
-    fmap f m = P (either Left (Right . first f) . runP m)
+    fmap f m = P (fmap (first f) . runP m)
 instance Applicative ParseASN1 where
     pure a = P $ \s -> Right (a, s)
     (<*>) mf ma = P $ \s ->
@@ -49,7 +45,7 @@ instance Applicative ParseASN1 where
                     Left err      -> Left err
                     Right (a, s3) -> Right (f a, s3)
 instance Monad ParseASN1 where
-    return a    = pure a
+    return = pure
     (>>=) m1 m2 = P $ \s ->
         case runP m1 s of
             Left err      -> Left err
@@ -77,7 +73,7 @@ throwParseError s = P $ \_ -> Left s
 
 -- | run the parse monad over a stream and returns the result and the remaining ASN1 Stream.
 runParseASN1State :: ParseASN1 a -> [ASN1] -> Either String (a,[ASN1])
-runParseASN1State f s = runP f s
+runParseASN1State = runP
 
 -- | run the parse monad over a stream and returns the result.
 --
