@@ -17,15 +17,20 @@ import Data.Word
 import Data.Bits
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
+import Data.List.NonEmpty ( NonEmpty (..), (<|) )
+import qualified Data.List.NonEmpty as NE
 
 {- | uintOfBytes returns the number of bytes and the unsigned integer represented by the bytes -}
 uintOfBytes :: ByteString -> (Int, Integer)
 uintOfBytes b = (B.length b, B.foldl (\acc n -> (acc `shiftL` 8) + fromIntegral n) 0 b)
 
 --bytesOfUInt i = B.unfoldr (\x -> if x == 0 then Nothing else Just (fromIntegral (x .&. 0xff), x `shiftR` 8)) i
-bytesOfUInt :: Integer -> [Word8]
-bytesOfUInt x = reverse (list x)
-    where list i = if i <= 0xff then [fromIntegral i] else (fromIntegral i .&. 0xff) : list (i `shiftR` 8)
+bytesOfUInt :: Integer -> NonEmpty Word8
+bytesOfUInt x = NE.reverse (list x)
+ where
+  list i = if i <= 0xff
+    then NE.singleton (fromIntegral i)
+    else (fromIntegral i .&. 0xff) <| list (i `shiftR` 8)
 
 {- | intOfBytes returns the number of bytes in the list and
    the represented integer by a two's completement list of bytes -}
@@ -39,16 +44,17 @@ intOfBytes b
         isNeg     = testBit (B.head b) 7
 
 {- | bytesOfInt convert an integer into a two's completemented list of bytes -}
-bytesOfInt :: Integer -> [Word8]
+bytesOfInt :: Integer -> NonEmpty Word8
 bytesOfInt i
-    | i > 0      = if testBit (head uints) 7 then 0 : uints else uints
-    | i == 0     = [0]
-    | otherwise  = if testBit (head nints) 7 then nints else 0xff : nints
-    where
-        uints = bytesOfUInt (abs i)
-        nints = reverse $ plusOne $ reverse $ map complement $ uints
-        plusOne []     = [1]
-        plusOne (x:xs) = if x == 0xff then 0 : plusOne xs else (x+1) : xs
+    | i > 0      = if testBit (NE.head uints) 7 then 0 <| uints else uints
+    | i == 0     = NE.singleton 0
+    | otherwise  = if testBit (NE.head nints) 7 then nints else 0xff <| nints
+ where
+  uints = bytesOfUInt (abs i)
+  nints = NE.reverse $ plusOne $ NE.reverse $ NE.map complement uints
+  plusOne (0xff :| []) = 0 :| [1]
+  plusOne (0xff :| (x : xs)) = 0 <| plusOne (x :| xs)
+  plusOne (x :| xs) = (x + 1) :| xs
 
 {- ASN1 often uses a particular kind of 7-bit encoding of integers like
    in the case of long tags or encoding of integer component of OID's.

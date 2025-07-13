@@ -19,6 +19,9 @@ extra-doc-files:
 - CHANGELOG.md
 - README.md
 
+ghc-options:
+- -Wall
+
 library:
   source-dirs: src
   exposed-modules:
@@ -34,9 +37,6 @@ library:
   - bytestring
   - hourglass >= 0.2.6
   - crypton-asn1-types >= 0.3.0 && < 0.4
-  ghc-options:
-  - -Wall
-  - -fwarn-tabs
 
 tests:
   tests-asn1-encoding:
@@ -53,7 +53,3 @@ tests:
     - crypton-asn1-types
     - crypton-asn1-encoding
     - hourglass
-    ghc-options:
-    - -Wall
-    - -fno-warn-orphans
-    - -fno-warn-missing-signatures

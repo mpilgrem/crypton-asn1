@@ -1,7 +1,8 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 import Test.Tasty.QuickCheck
 import Test.Tasty
 
-import Control.Applicative
 import Data.ASN1.Get (runGet, Result(..))
 import Data.ASN1.BitArray
 import Data.ASN1.Prim
@@ -26,16 +27,14 @@ instance Arbitrary ASN1Length where
         arbitrary = do
                 c <- choose (0,2) :: Gen Int
                 case c of
-                        0 -> liftM LenShort (choose (0,0x79))
+                        0 -> fmap LenShort (choose (0,0x79))
                         1 -> do
                                 nb <- choose (0x80,0x1000)
                                 return $ mkSmallestLength nb
                         _ -> return LenIndefinite
-                where
-                        nbBytes nb = if nb > 255 then 1 + nbBytes (nb `div` 256) else 1
 
 arbitraryDefiniteLength :: Gen ASN1Length
-arbitraryDefiniteLength = arbitrary `suchThat` (\l -> l /= LenIndefinite)
+arbitraryDefiniteLength = arbitrary `suchThat` (/= LenIndefinite)
 
 arbitraryTag :: Gen ASN1Tag
 arbitraryTag = choose(1,10000)
@@ -50,7 +49,7 @@ arbitraryEvents = do
                 LenLong _ x -> x
                 LenShort x  -> x
                 _           -> 0
-        pr <- liftM Primitive (arbitraryBSsized blen)
+        pr <- fmap Primitive (arbitraryBSsized blen)
         return (ASN1Events [Header hdr, pr])
 
 newtype ASN1Events = ASN1Events [ASN1Event]
@@ -67,8 +66,8 @@ arbitraryOID = do
         i1  <- choose (0,2) :: Gen Integer
         i2  <- choose (0,39) :: Gen Integer
         ran <- choose (0,30) :: Gen Int
-        l   <- replicateM ran (suchThat arbitrary (\i -> i > 0))
-        return $ (i1:i2:l)
+        l   <- replicateM ran (suchThat arbitrary (> 0))
+        return (i1:i2:l)
 
 arbitraryBSsized :: Int -> Gen B.ByteString
 arbitraryBSsized len = do
@@ -105,7 +104,7 @@ instance Arbitrary TimeOfDay where
         h    <- choose (0, 23)
         mi   <- choose (0, 59)
         se   <- choose (0, 59)
-        nsec <- return 0
+        let nsec = 0
         return $ TimeOfDay (Hours h) (Minutes mi) (Seconds se) nsec
 
 instance Arbitrary DateTime where
@@ -123,12 +122,15 @@ instance Arbitrary ASN1TimeType where
 instance Arbitrary ASN1StringEncoding where
     arbitrary = elements [UTF8, Numeric, Printable, T61, VideoTex, IA5, Graphic, Visible, General, UTF32, BMP]
 
+arbitraryPrintString :: ASN1StringEncoding -> Gen ASN1CharacterString
 arbitraryPrintString encoding = do
-    let printableString = (['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ " ()+,-./:=?")
+    let printableString = ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ " ()+,-./:=?"
     asn1CharacterString encoding <$> replicateM 21 (elements printableString)
 
+arbitraryBS :: ASN1StringEncoding -> Gen ASN1CharacterString
 arbitraryBS encoding = ASN1CharacterString encoding . B.pack <$> replicateM 7 (choose (0,0xff))
 
+arbitraryIA5String :: Gen ASN1CharacterString
 arbitraryIA5String = asn1CharacterString IA5 <$> replicateM 21 (choose (toEnum 0,toEnum 127))
 
 arbitraryUCS2 :: Gen ASN1CharacterString
@@ -154,13 +156,13 @@ instance Arbitrary ASN1CharacterString where
 
 instance Arbitrary ASN1 where
         arbitrary = oneof
-                [ liftM Boolean arbitrary
-                , liftM IntVal arbitrary
-                , liftM BitString arbitrary
-                , liftM OctetString arbitrary
+                [ fmap Boolean arbitrary
+                , fmap IntVal arbitrary
+                , fmap BitString arbitrary
+                , fmap OctetString arbitrary
                 , return Null
-                , liftM OID arbitraryOID
-                , liftM Real arbitrary
+                , fmap OID arbitraryOID
+                , fmap Real arbitrary
                 -- , return Enumerated
                 , ASN1String <$> arbitrary
                 , ASN1Time <$> arbitrary <*> arbitrary <*> arbitrary
@@ -185,12 +187,12 @@ instance Arbitrary ASN1s where
                                 return ([Start str] ++ l ++ [End str])
 
 prop_header_marshalling_id :: ASN1Header -> Bool
-prop_header_marshalling_id v = (ofDone $ runGet getHeader $ putHeader v) == Right v
+prop_header_marshalling_id v = ofDone ( runGet getHeader $ putHeader v) == Right v
     where ofDone (Done r _ _) = Right r
           ofDone _            = Left "not done"
 
 prop_event_marshalling_id :: ASN1Events -> Bool
-prop_event_marshalling_id (ASN1Events e) = (parseLBS $ toLazyByteString e) == Right e
+prop_event_marshalling_id (ASN1Events e) = parseLBS (toLazyByteString e) == Right e
 
 prop_asn1_der_marshalling_id :: [ASN1] -> Bool
 prop_asn1_der_marshalling_id v = (decodeASN1 DER . encodeASN1 DER) v `assertEq` Right v
@@ -211,6 +213,7 @@ prop_integral_real_der_marshalling_id v = (decodeASN1 DER . encodeASN1 DER) [Rea
                  | got /= expected = error ("got: " ++ show got ++ " expected: " ++ show expected)
                  | otherwise       = True
 
+marshallingTests :: TestTree
 marshallingTests = testGroup "Marshalling"
     [ testProperty "Header" prop_header_marshalling_id
     , testProperty "Event"  prop_event_marshalling_id
@@ -219,4 +222,5 @@ marshallingTests = testGroup "Marshalling"
     , testProperty "Integral Real"   prop_integral_real_der_marshalling_id
     ]
 
+main :: IO ()
 main = defaultMain $ testGroup "asn1-encoding" [marshallingTests]

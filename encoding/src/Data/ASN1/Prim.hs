@@ -52,9 +52,10 @@ import Data.ASN1.Types.Lowlevel
 import Data.ASN1.Error
 import Data.ASN1.Serialize
 import Data.Bits
-import Data.Monoid
+import Data.Maybe ( isJust )
 import Data.Word
 import Data.List (unfoldr)
+import qualified Data.List.NonEmpty as NE
 import Data.ByteString (ByteString)
 import Data.Char (ord, isDigit)
 import qualified Data.ByteString as B
@@ -62,8 +63,8 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Unsafe as B
 import Data.Hourglass
 import Control.Arrow (first)
-import Control.Applicative
 import Control.Monad
+import Prelude hiding ( exp, exponent )
 
 encodeHeader :: Bool -> ASN1Length -> ASN1 -> ASN1Header
 encodeHeader pc len (Boolean _)                = ASN1Header Universal 0x1 pc len
@@ -218,7 +219,7 @@ getIntegerRaw typestr s
     | B.length s == 0 = Left . TypeDecodingFailed $ typestr ++ ": null encoding"
     | B.length s == 1 = Right $ snd $ intOfBytes s
     | otherwise       =
-        if (v1 == 0xff && testBit v2 7) || (v1 == 0x0 && (not $ testBit v2 7))
+        if (v1 == 0xff && testBit v2 7) || (v1 == 0x0 && not ( testBit v2 7))
             then Left . TypeDecodingFailed $ typestr ++ ": not shortest encoding"
             else Right $ snd $ intOfBytes s
         where
@@ -233,7 +234,7 @@ getDoubleRaw s
   | B.null s  = Right 0
 getDoubleRaw s@(B.unsafeHead -> h)
   | h == 0x40 = Right $! (1/0)  -- Infinity
-  | h == 0x41 = Right $! (-1/0) -- -Infinity
+  | h == 0x41 = Right $! (-(1/0)) -- -Infinity
   | h == 0x42 = Right $! (0/0)  -- NaN
   | otherwise = do
       let len = B.length s
@@ -272,7 +273,7 @@ getExponentLength len h s =
 getBitString :: ByteString -> Either ASN1Error ASN1
 getBitString s =
     let toSkip = B.head s in
-    let toSkip' = if toSkip >= 48 && toSkip <= 48 + 7 then toSkip - (fromIntegral $ ord '0') else toSkip in
+    let toSkip' = if toSkip >= 48 && toSkip <= 48 + 7 then toSkip - fromIntegral ( ord '0') else toSkip in
     let xs = B.tail s in
     if toSkip' >= 0 && toSkip' <= 7
         then Right $ BitString $ toBitArray xs (fromIntegral toSkip')
@@ -291,10 +292,10 @@ getNull s
 
 {- | return an OID -}
 getOID :: ByteString -> Either ASN1Error ASN1
-getOID s = Right $ OID $ (fromIntegral (x `div` 40) : fromIntegral (x `mod` 40) : groupOID xs)
-  where
-        (x:xs) = B.unpack s
-
+getOID s = case B.unpack s of
+  [] -> Left $ TypeDecodingFailed "OID: no data"
+  (x : xs) -> Right $ OID (fromIntegral (x `div` 40) : fromIntegral (x `mod` 40) : groupOID xs)
+ where
         groupOID :: [Word8] -> [Integer]
         groupOID = map (foldl (\acc n -> (acc `shiftL` 7) + fromIntegral n) 0) . groupSubOID
 
@@ -342,7 +343,7 @@ getTime timeType bs
             case s of
                 '+':s' -> Right (dt, parseTimezoneFormat id s')
                 '-':s' -> Right (dt, parseTimezoneFormat ((-1) *) s')
-                'Z':[] -> Right (dt, Just timezone_UTC)
+                ['Z'] -> Right (dt, Just timezone_UTC)
                 ""     -> Right (dt, Nothing)
                 _      -> Left ("unknown timezone format: " ++ s)
 
@@ -361,7 +362,7 @@ getTime timeType bs
                             _ -> 1
 
         spanToLength :: Int -> (Char -> Bool) -> String -> (String, String)
-        spanToLength len p l = loop 0 l
+        spanToLength len p = loop 0
           where loop i z
                     | i >= len  = ([], z)
                     | otherwise = case z of
@@ -375,7 +376,7 @@ getTime timeType bs
         toInt = foldl (\acc w -> acc * 10 + (ord w - ord '0')) 0
 
         decodingError reason = Left $ TypeDecodingFailed ("time format invalid for " ++ show timeType ++ " : " ++ reason)
-        hasNonASCII = maybe False (const True) . B.find (\c -> c > 0x7f)
+        hasNonASCII = isJust . B.find (> 0x7f)
 
 -- FIXME need msec printed
 putTime :: ASN1TimeType -> DateTime -> Maybe TimezoneOffset -> ByteString
@@ -391,7 +392,7 @@ putTime ty dt mtz = BC.pack etime
                              | otherwise          -> show tz
 
 putInteger :: Integer -> ByteString
-putInteger i = B.pack $ bytesOfInt i
+putInteger i = B.pack $ NE.toList $ bytesOfInt i
 
 putBitString :: BitArray -> ByteString
 putBitString (BitArray n bits) =

@@ -7,7 +7,6 @@
 --
 -- A module containing ASN1 BER and DER specification encoding/decoding.
 --
-{-# LANGUAGE EmptyDataDecls #-}
 module Data.ASN1.BinaryEncoding
     ( BER(..)
     , DER(..)
@@ -50,7 +49,7 @@ decodeConstruction (ASN1Header Universal 0x11 _ _) = Set
 decodeConstruction (ASN1Header c t _ _)            = Container c t
 
 decodeEventASN1Repr :: (ASN1Header -> Maybe ASN1Error) -> [ASN1Event] -> [ASN1Repr]
-decodeEventASN1Repr checkHeader l = loop [] l
+decodeEventASN1Repr checkHeader = loop []
     where loop _ []     = []
           loop acc (h@(Header hdr@(ASN1Header _ _ True _)):ConstructionBegin:xs) =
                 let ctype = decodeConstruction hdr in

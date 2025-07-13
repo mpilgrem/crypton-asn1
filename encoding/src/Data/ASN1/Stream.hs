@@ -20,12 +20,12 @@ import Data.ASN1.Types.Lowlevel
 type ASN1Repr = (ASN1, [ASN1Event])
 
 getConstructedEnd :: Int -> [ASN1] -> ([ASN1],[ASN1])
-getConstructedEnd _ xs@[]                = (xs, [])
-getConstructedEnd i ((x@(Start _)):xs)   = let (yz, zs) = getConstructedEnd (i+1) xs in (x:yz,zs)
-getConstructedEnd i ((x@(End _)):xs)
+getConstructedEnd _ xs@[]              = (xs, [])
+getConstructedEnd i (x@(Start _):xs)   = let (yz, zs) = getConstructedEnd (i+1) xs in (x:yz,zs)
+getConstructedEnd i (x@(End _):xs)
     | i == 0    = ([], xs)
     | otherwise = let (ys, zs) = getConstructedEnd (i-1) xs in (x:ys,zs)
-getConstructedEnd i (x:xs)               = let (ys, zs) = getConstructedEnd i xs in (x:ys,zs)
+getConstructedEnd i (x:xs)             = let (ys, zs) = getConstructedEnd i xs in (x:ys,zs)
 
 getConstructedEndRepr :: [ASN1Repr] -> ([ASN1Repr],[ASN1Repr])
 getConstructedEndRepr = g
@@ -34,8 +34,8 @@ getConstructedEndRepr = g
           g (x:xs)             = ([x],xs)
 
           getEnd :: Int -> [ASN1Repr] -> ([ASN1Repr],[ASN1Repr])
-          getEnd _ []                    = ([], [])
-          getEnd 0 xs                    = ([], xs)
-          getEnd i ((x@(Start _, _)):xs) = let (ys, zs) = getEnd (i+1) xs in (x:ys,zs)
-          getEnd i ((x@(End _, _)):xs)   = let (ys, zs) = getEnd (i-1) xs in (x:ys,zs)
-          getEnd i (x:xs)                = let (ys, zs) = getEnd i xs in (x:ys,zs)
+          getEnd _ []                  = ([], [])
+          getEnd 0 xs                  = ([], xs)
+          getEnd i (x@(Start _, _):xs) = let (ys, zs) = getEnd (i+1) xs in (x:ys,zs)
+          getEnd i (x@(End _, _):xs)   = let (ys, zs) = getEnd (i-1) xs in (x:ys,zs)
+          getEnd i (x:xs)              = let (ys, zs) = getEnd i xs in (x:ys,zs)

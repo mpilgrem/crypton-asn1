@@ -46,7 +46,7 @@ library
       Data.ASN1.Serialize
   hs-source-dirs:
       src
-  ghc-options: -Wall -fwarn-tabs
+  ghc-options: -Wall
   build-depends:
       base >=3 && <5
     , bytestring
@@ -73,7 +73,7 @@ test-suite tests-asn1-encoding
   hs-source-dirs:
       tests
       src
-  ghc-options: -Wall -fno-warn-orphans -fno-warn-missing-signatures
+  ghc-options: -Wall
   build-depends:
       base >=3 && <7
     , bytestring

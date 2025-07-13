@@ -13,8 +13,9 @@ import Data.ASN1.Internal
 import Data.ASN1.Types
 import Data.ASN1.Types.Lowlevel
 import Data.Bits
+import Data.List.NonEmpty ( NonEmpty (..), (<|) )
+import qualified Data.List.NonEmpty as NE
 import Data.Word
-import Control.Applicative ((<$>))
 import Control.Monad
 
 -- | parse an ASN1 header
@@ -22,13 +23,12 @@ getHeader :: Get ASN1Header
 getHeader = do
     (cl,pc,t1) <- parseFirstWord <$> getWord8
     tag        <- if t1 == 0x1f then getTagLong else return t1
-    len        <- getLength
-    return $ ASN1Header cl tag pc len
+    ASN1Header cl tag pc <$> getLength
 
 -- | Parse the first word of an header
 parseFirstWord :: Word8 -> (ASN1Class, Bool, ASN1Tag)
 parseFirstWord w = (cl,pc,t1)
-  where cl = toEnum $ fromIntegral $ (w `shiftR` 6)
+  where cl = toEnum $ fromIntegral (w `shiftR` 6)
         pc = testBit w 5
         t1 = fromIntegral (w .&. 0x1f)
 
@@ -77,19 +77,19 @@ putHeader (ASN1Header cl tag pc len) = B.concat
         pcval = shiftL (if pc then 0x1 else 0x0) 5
         tag0  = if tag < 0x1f then fromIntegral tag else 0x1f
         word1 = cli .|. pcval .|. tag0
-        lenBS = B.pack $ putLength len
+        lenBS = B.pack $ NE.toList $ putLength len
         tagBS = putVarEncodingIntegral tag
 
 {- | putLength encode a length into a ASN1 length.
  - see getLength for the encoding rules -}
-putLength :: ASN1Length -> [Word8]
+putLength :: ASN1Length -> NonEmpty Word8
 putLength (LenShort i)
     | i < 0 || i > 0x7f = error "putLength: short length is not between 0x0 and 0x80"
-    | otherwise         = [fromIntegral i]
+    | otherwise         = NE.singleton (fromIntegral i)
 putLength (LenLong _ i)
     | i < 0     = error "putLength: long length is negative"
-    | otherwise = lenbytes : lw
+    | otherwise = lenbytes <| lw
         where
             lw       = bytesOfUInt $ fromIntegral i
             lenbytes = fromIntegral (length lw .|. 0x80)
-putLength (LenIndefinite) = [0x80]
+putLength LenIndefinite = NE.singleton 0x80

@@ -6,7 +6,6 @@
 -- Portability : unknown
 --
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE BangPatterns #-}
 module Data.ASN1.Error
     (
     -- * Errors types

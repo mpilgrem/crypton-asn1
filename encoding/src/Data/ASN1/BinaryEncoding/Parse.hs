@@ -89,7 +89,7 @@ runParseState = loop
                     Just endPos:xs
                          | pos > endPos  -> Left StreamConstructionWrongSize
                          | pos == endPos -> terminateAugment ((evs ++ [ConstructionEnd], ParseState xs pe pos), r)
-                         | otherwise     -> Right ret 
+                         | otherwise     -> Right ret
                     _                    -> Right ret
 
            -- go get one element (either a primitive or a header) from the bytes
@@ -128,7 +128,7 @@ runParseState = loop
                      Partial f            -> Right (([], ParseState stackEnd (ExpectPrimitive len $ Just f) pos), B.empty)
                      Done p nPos remBytes -> Right (([Primitive p], ParseState stackEnd (ExpectHeader Nothing) nPos), remBytes)
 
-           runGetHeader Nothing  = \pos -> runGetPos pos getHeader
+           runGetHeader Nothing  = (`runGetPos` getHeader)
            runGetHeader (Just f) = const f
 
            runGetPrimitive Nothing  n = \pos -> runGetPos pos (getBytes $ fromIntegral n)
@@ -143,7 +143,7 @@ isParseDone _                                        = False
 -- | Parse one lazy bytestring and returns on success all ASN1 events associated.
 parseLBS :: L.ByteString -> Either ASN1Error [ASN1Event]
 parseLBS lbs = foldrEither process ([], newParseState) (L.toChunks lbs) `mplusEither` onSuccess
-    where 
+    where
           onSuccess (allEvs, finalState)
                   | isParseDone finalState = Right $ concat $ reverse allEvs
                   | otherwise              = Left ParsingPartial

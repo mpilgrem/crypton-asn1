@@ -28,7 +28,7 @@ module Data.ASN1.Get
     , getWord8
     ) where
 
-import Control.Applicative (Applicative(..),Alternative(..))
+import Control.Applicative ( Alternative (..) )
 import Control.Monad (ap,MonadPlus(..))
 import Data.Maybe (fromMaybe)
 import Foreign
@@ -89,7 +89,7 @@ instance Functor Get where
          in unGet m s0 b0 m0 p0 kf ks'
 
 instance Applicative Get where
-    pure  = return
+    pure a = Get $ \ s0 b0 m0 p0 _ ks -> ks s0 b0 m0 p0 a
     (<*>) = ap
 
 instance Alternative Get where
@@ -98,7 +98,7 @@ instance Alternative Get where
 
 -- Definition directly from Control.Monad.State.Strict
 instance Monad Get where
-    return a = Get $ \ s0 b0 m0 p0 _ ks -> ks s0 b0 m0 p0 a
+    return = pure
 
     m >>= g  = Get $ \s0 b0 m0 p0 kf ks ->
         let ks' s1 b1 m1 p1 a = unGet (g a) s1 b1 m1 p1 kf ks
