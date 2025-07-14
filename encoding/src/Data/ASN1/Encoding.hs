@@ -1,51 +1,56 @@
--- |
--- Module      : Data.ASN1.Encoding
--- License     : BSD-style
--- Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
--- Stability   : experimental
--- Portability : unknown
---
-module Data.ASN1.Encoding
-    (
-    -- * generic class for decoding and encoding stream
-      ASN1Decoding(..)
-    , ASN1DecodingRepr(..)
-    , ASN1Encoding(..)
-    -- * strict bytestring version
-    , decodeASN1'
-    , decodeASN1Repr'
-    , encodeASN1'
-    ) where
+{- |
+Module      : Data.ASN1.Encoding
+License     : BSD-style
+Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
+Stability   : experimental
+Portability : unknown
+-}
 
+module Data.ASN1.Encoding
+  ( -- * generic class for decoding and encoding stream
+    ASN1Decoding (..)
+  , ASN1DecodingRepr (..)
+  , ASN1Encoding (..)
+    -- * strict bytestring version
+  , decodeASN1'
+  , decodeASN1Repr'
+  , encodeASN1'
+  ) where
+
+import           Data.ASN1.Error ( ASN1Error )
+import           Data.ASN1.Stream ( ASN1Repr )
+import           Data.ASN1.Types ( ASN1 )
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
-import Data.ASN1.Stream ( ASN1Repr )
-import Data.ASN1.Types ( ASN1 )
-import Data.ASN1.Error ( ASN1Error )
 
--- | Describe an ASN1 decoding, that transform a bytestream into an asn1stream
+-- | Describe an ASN.1 decoding, that transforms a bytestream into an
+-- asn1stream.
 class ASN1Decoding a where
-    -- | decode a lazy bytestring into an ASN1 stream
-    decodeASN1 :: a -> L.ByteString -> Either ASN1Error [ASN1]
+  -- | Decode a lazy bytestring into an ASN.1 stream.
+  decodeASN1 :: a -> L.ByteString -> Either ASN1Error [ASN1]
 
--- | transition class.
+-- | Transition class.
 class ASN1DecodingRepr a where
-    -- | decode a lazy bytestring into an ASN1 stream
-    decodeASN1Repr :: a -> L.ByteString -> Either ASN1Error [ASN1Repr]
+  -- | Decode a lazy bytestring into an ASN.1 stream.
+  decodeASN1Repr :: a -> L.ByteString -> Either ASN1Error [ASN1Repr]
 
--- | Describe an ASN1 encoding, that transform an asn1stream into a bytestream
+-- | Describe an ASN.1 encoding, that transform an asn1stream into a bytestream.
 class ASN1Encoding a where
-    -- | encode a stream into a lazy bytestring
-    encodeASN1 :: a -> [ASN1] -> L.ByteString
+  -- | Encode a stream into a lazy bytestring.
+  encodeASN1 :: a -> [ASN1] -> L.ByteString
 
--- | decode a strict bytestring into an ASN1 stream
+-- | Decode a strict bytestring into an ASN.1 stream.
 decodeASN1' :: ASN1Decoding a => a -> B.ByteString -> Either ASN1Error [ASN1]
 decodeASN1' encoding bs = decodeASN1 encoding $ L.fromChunks [bs]
 
--- | decode a strict bytestring into an ASN1Repr stream
-decodeASN1Repr' :: ASN1DecodingRepr a => a -> B.ByteString -> Either ASN1Error [ASN1Repr]
+-- | Decode a strict bytestring into an ASN1Repr stream.
+decodeASN1Repr' ::
+     ASN1DecodingRepr a
+  => a
+  -> B.ByteString
+  -> Either ASN1Error [ASN1Repr]
 decodeASN1Repr' encoding bs = decodeASN1Repr encoding $ L.fromChunks [bs]
 
--- | encode a stream into a strict bytestring
+-- | Encode a stream into a strict bytestring.
 encodeASN1' :: ASN1Encoding a => a -> [ASN1] -> B.ByteString
 encodeASN1' encoding = B.concat . L.toChunks . encodeASN1 encoding
