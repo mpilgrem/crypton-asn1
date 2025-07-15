@@ -6,9 +6,9 @@ cabal-version: 1.18
 
 name:           crypton-asn1-parse
 version:        0.9.5
-synopsis:       Simple monadic parser for ASN1 stream types.
-description:    Simple monadic parser for ASN1 stream types, when ASN1 pattern matching is not
-                convenient.
+synopsis:       A monadic parser combinator for ASN.1 streams.
+description:    A library providing a monadic parser combinator for use with types representing
+                the Abstract Syntax Notation One (ASN.1) standard.
 category:       Data
 stability:      experimental
 homepage:       https://github.com/mpilgrem/crypton-asn1
