@@ -2,10 +2,11 @@ spec-version: 0.36.0 # Avoid legacy behaviour of Hpack
 
 name: crypton-asn1-encoding
 version: 0.9.6
-synopsis: ASN1 data reader and writer in RAW, BER and DER forms
+synopsis: ASN.1 data (raw, BER or DER) readers and writers
 description: |
-  ASN1 data reader and writer in raw form with supports for high level forms of
-  ASN1 (BER, and DER).
+  A library providing readers and writers of data following the Abstract Syntax
+  Notation One (ASN.1) standard in raw form or in the high-level forms of Basic
+  Encoding Rules (BER) and Distinguished Encoding Rules (DER).
 copyright: Vincent Hanquez <vincent@snarc.org>
 author: Vincent Hanquez <vincent@snarc.org>
 maintainer:

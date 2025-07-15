@@ -4,9 +4,9 @@ crypton-asn1-encoding
 Originally forked from
 [asn1-encoding-0.9.6](https://hackage.haskell.org/package/asn1-encoding-0.9.6).
 
-ASN.1 for Haskell
-
-* crypton-asn1-encoding : BER and DER encoding decoder and encoder.
+A reader and writer of data following the Abstract Syntax Notation One (ASN.1)
+standard in raw form or in the high-level forms of Basic Encoding Rules (BER)
+and Distinguished Encoding Rules (DER).
 
 History
 -------

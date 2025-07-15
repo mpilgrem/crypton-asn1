@@ -6,9 +6,10 @@ cabal-version: 1.18
 
 name:           crypton-asn1-encoding
 version:        0.9.6
-synopsis:       ASN1 data reader and writer in RAW, BER and DER forms
-description:    ASN1 data reader and writer in raw form with supports for high level forms of
-                ASN1 (BER, and DER).
+synopsis:       ASN.1 data (raw, BER or DER) readers and writers
+description:    A library providing readers and writers of data following the Abstract Syntax
+                Notation One (ASN.1) standard in raw form or in the high-level forms of Basic
+                Encoding Rules (BER) and Distinguished Encoding Rules (DER).
 category:       Data
 stability:      experimental
 homepage:       https://github.com/mpilgrem/crypton-asn1
