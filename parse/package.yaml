@@ -2,10 +2,10 @@ spec-version: 0.36.0  # Avoid legacy behaviour of Hpack
 
 name: crypton-asn1-parse
 version: 0.9.5
-synopsis: A monadic parser combinator for ASN.1 streams.
+synopsis: A monadic parser combinator for a ASN.1 stream.
 description: |
-  A library providing a monadic parser combinator for use with types representing
-  the Abstract Syntax Notation One (ASN.1) standard.
+  A library providing a monadic parser combinator for use with a stream of
+  Abstract Syntax Notation One (ASN.1) standard values.
 copyright: Vincent Hanquez <vincent@snarc.org>
 author: Vincent Hanquez <vincent@snarc.org>
 maintainer:
@@ -20,6 +20,7 @@ extra-doc-files:
 - README.md
 
 language: Haskell98
+other-extensions: LambdaCase
 
 library:
   source-dirs: src

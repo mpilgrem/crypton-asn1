@@ -4,8 +4,8 @@ crypton-asn1-parse
 Originally forked from
 [asn1-parse-0.9.5](https://hackage.haskell.org/package/asn1-parse-0.9.5).
 
-A library providing a monadic parser combinator for use with types representing
-the Abstract Syntax Notation One (ASN.1) standard.
+A library providing a monadic parser combinator for use with a stream of
+Abstract Syntax Notation One (ASN.1) standard values.
 
 History
 -------

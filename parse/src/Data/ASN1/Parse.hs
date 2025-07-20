@@ -7,7 +7,7 @@ Copyright   : (c) 2010-2013 Vincent Hanquez <vincent@snarc.org>
 Stability   : experimental
 Portability : unknown
 
-A parser combinator for a stream of ASN.1 items.
+A monadic parser combinator for a stream of ASN.1 items.
 -}
 
 module Data.ASN1.Parse
