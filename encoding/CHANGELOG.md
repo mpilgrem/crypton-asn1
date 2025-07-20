@@ -6,12 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
-## UNRELEASED
+## 0.9.7
 
 * Move library modules to directory `src`.
 * Drop support for GHC < 8.8.
 * Use `LANAGUAGE RankNTypes`, rather than `LANGUAGE Rank2Types`.
-* Use `other-extensions` field in Cabal file.
+* Use the `other-extensions` field in the Cabal file.
 * Module `Data.ASN1.Stream` spun out to dependency package
   `crypton-asn1-types-0.3.6`.
 
