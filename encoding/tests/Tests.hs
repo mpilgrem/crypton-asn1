@@ -40,8 +40,8 @@ instance Arbitrary ASN1Length where
       0 -> fmap LenShort (choose (0, 0x79))
       1 -> do
         nb <- choose (0x80, 0x1000)
-        return $ mkSmallestLength nb
-      _ -> return LenIndefinite
+        pure $ mkSmallestLength nb
+      _ -> pure LenIndefinite
 
 arbitraryDefiniteLength :: Gen ASN1Length
 arbitraryDefiniteLength = arbitrary `suchThat` (/= LenIndefinite)
@@ -54,13 +54,13 @@ instance Arbitrary ASN1Header where
 
 arbitraryEvents :: Gen ASN1Events
 arbitraryEvents = do
-  hdr@(ASN1Header _ _ _ len) <- liftM4 ASN1Header arbitrary arbitraryTag (return False) arbitraryDefiniteLength
+  hdr@(ASN1Header _ _ _ len) <- liftM4 ASN1Header arbitrary arbitraryTag (pure False) arbitraryDefiniteLength
   let blen = case len of
         LenLong _ x -> x
         LenShort x  -> x
         _           -> 0
   pr <- fmap Primitive (arbitraryBSsized blen)
-  return (ASN1Events [Header hdr, pr])
+  pure (ASN1Events [Header hdr, pr])
 
 newtype ASN1Events = ASN1Events [ASN1Event]
 
@@ -76,12 +76,12 @@ arbitraryOID = do
   i2  <- choose (0, 39) :: Gen Integer
   ran <- choose (0, 30) :: Gen Int
   l   <- replicateM ran (suchThat arbitrary (> 0))
-  return (i1:i2:l)
+  pure (i1:i2:l)
 
 arbitraryBSsized :: Int -> Gen B.ByteString
 arbitraryBSsized len = do
   ws <- replicateM len (choose (0, 255) :: Gen Int)
-  return $ B.pack $ map fromIntegral ws
+  pure $ B.pack $ map fromIntegral ws
 
 instance Arbitrary B.ByteString where
   arbitrary = do
@@ -92,14 +92,14 @@ instance Arbitrary BitArray where
   arbitrary = do
     bs <- arbitrary
     w  <- choose (0, 7) :: Gen Int
-    return $ toBitArray bs w
+    pure $ toBitArray bs w
 
 instance Arbitrary Date where
   arbitrary = do
     y <- choose (1951, 2050)
     m <- elements [ January .. December]
     d <- choose (1, 30)
-    return $ normalizeDate $ Date y m d
+    pure $ normalizeDate $ Date y m d
 
 normalizeDate :: Date -> Date
 normalizeDate origDate
@@ -114,7 +114,7 @@ instance Arbitrary TimeOfDay where
     mi   <- choose (0, 59)
     se   <- choose (0, 59)
     let nsec = 0
-    return $ TimeOfDay (Hours h) (Minutes mi) (Seconds se) nsec
+    pure $ TimeOfDay (Hours h) (Minutes mi) (Seconds se) nsec
 
 instance Arbitrary DateTime where
   arbitrary = DateTime <$> arbitrary <*> arbitrary
@@ -190,10 +190,10 @@ instance Arbitrary ASN1 where
     , fmap IntVal arbitrary
     , fmap BitString arbitrary
     , fmap OctetString arbitrary
-    , return Null
+    , pure Null
     , fmap OID arbitraryOID
     , fmap Real arbitrary
-      -- , return Enumerated
+      -- , pure Enumerated
     , ASN1String <$> arbitrary
     , ASN1Time <$> arbitrary <*> arbitrary <*> arbitrary
     ]
@@ -210,11 +210,11 @@ instance Arbitrary ASN1s where
       4 -> makeList Sequence
       3 -> makeList Set
       _ -> resize 2 $ listOf1 arbitrary
-    return $ ASN1s z
+    pure $ ASN1s z
    where
     makeList str = do
       (ASN1s l) <- arbitrary
-      return ([Start str] ++ l ++ [End str])
+      pure ([Start str] ++ l ++ [End str])
 
 prop_header_marshalling_id :: ASN1Header -> Bool
 prop_header_marshalling_id v =

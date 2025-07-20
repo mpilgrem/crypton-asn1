@@ -36,7 +36,7 @@ singletonNE a = a :| []
 getHeader :: Get ASN1Header
 getHeader = do
   (cl, pc, t1) <- parseFirstWord <$> getWord8
-  tag <- if t1 == 0x1f then getTagLong else return t1
+  tag <- if t1 == 0x1f then getTagLong else pure t1
   ASN1Header cl tag pc <$> getLength
 
 -- | Parse the first word of an header.
@@ -55,13 +55,13 @@ getTagLong = do
   when (t == 0x80) $ fail "non canonical encoding of long tag"
   if testBit t 7
     then loop (clearBit t 7)
-    else return t
+    else pure t
  where
   loop n = do
     t <- fromIntegral <$> getWord8
     if testBit t 7
       then loop (n `shiftL` 7 + clearBit t 7)
-      else return (n `shiftL` 7 + t)
+      else pure (n `shiftL` 7 + t)
 
 {- get the asn1 length which is either short form if 7th bit is not set,
  - indefinite form is the 7 bit is set and every other bits clear,
@@ -72,12 +72,12 @@ getLength = do
   l1 <- fromIntegral <$> getWord8
   if testBit l1 7
     then case clearBit l1 7 of
-      0   -> return LenIndefinite
+      0   -> pure LenIndefinite
       len -> do
         lw <- getBytes len
-        return (LenLong len $ uintbs lw)
+        pure (LenLong len $ uintbs lw)
     else
-      return (LenShort l1)
+      pure (LenShort l1)
  where
   {- uintbs return the unsigned int represented by the bytes -}
   uintbs = B.foldl (\acc n -> (acc `shiftL` 8) + fromIntegral n) 0

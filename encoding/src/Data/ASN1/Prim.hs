@@ -263,9 +263,9 @@ getDoubleRaw s@(B.unsafeHead -> h)
       let len = B.length s
       base <- case (h `testBit` 5, h `testBit` 4) of
         -- extract bits 5,4 for the base
-        (False, False) -> return 2
-        (False, True)  -> return 8
-        (True,  False) -> return 16
+        (False, False) -> pure 2
+        (False, True)  -> pure 8
+        (True,  False) -> pure 16
         _ ->
           Left . TypeDecodingFailed $ "real: invalid base detected"
       -- check bit 6 for the sign
@@ -295,8 +295,8 @@ getExponentLength len h s =
           unless (len > 1) $
             Left . TypeDecodingFailed $
               "real: not enough input to decode exponent length"
-          return $ B.unsafeIndex s 1
-      | otherwise -> return $ l + 1
+          pure $ B.unsafeIndex s 1
+      | otherwise -> pure $ l + 1
 
 getBitString :: ByteString -> Either ASN1Error ASN1
 getBitString s =

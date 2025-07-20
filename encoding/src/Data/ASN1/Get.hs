@@ -183,7 +183,7 @@ failDesc err =
 getBytesCopy :: Int -> Get B.ByteString
 getBytesCopy n = do
   bs <- getBytes n
-  return $! B.copy bs
+  pure $! B.copy bs
 
 ------------------------------------------------------------------------
 -- Helpers
@@ -191,16 +191,16 @@ getBytesCopy n = do
 -- | Pull @n@ bytes from the input, as a strict ByteString.
 getBytes :: Int -> Get B.ByteString
 getBytes n
-  | n <= 0    = return B.empty
+  | n <= 0    = pure B.empty
   | otherwise = do
       s <- ensure n
       let (b1, b2) = B.splitAt n s
       put (fromIntegral n) b2
-      return b1
+      pure b1
 
 getWord8 :: Get Word8
 getWord8 = do
   s <- ensure 1
   case B.uncons s of
     Nothing     -> error "getWord8: ensure internal error"
-    Just (h, b2) -> put 1 b2 >> return h
+    Just (h, b2) -> put 1 b2 >> pure h

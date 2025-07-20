@@ -110,7 +110,7 @@ getObject = do
   l <- get
   case fromASN1 l of
     Left err     -> throwParseError err
-    Right (a, l2) -> put l2 >> return a
+    Right (a, l2) -> put l2 >> pure a
 
 -- | Get the next ASN.1 item in a stream of ASN.1 items.
 getNext :: ParseASN1 ASN1
@@ -118,7 +118,7 @@ getNext = do
   list <- get
   case list of
     []    -> throwParseError "empty"
-    (h : l) -> put l >> return h
+    (h : l) -> put l >> pure h
 
 -- | Get many items from the stream until there are none left.
 getMany :: ParseASN1 a -> ParseASN1 [a]
@@ -126,7 +126,7 @@ getMany getOne = do
   next <- hasNext
   if next
     then liftM2 (:) getOne (getMany getOne)
-    else return []
+    else pure []
 
 -- | Applies the given function to the next ASN.1 item in a stream of ASN.1
 -- items, if there is one.
@@ -134,12 +134,12 @@ getNextMaybe :: (ASN1 -> Maybe a) -> ParseASN1 (Maybe a)
 getNextMaybe f = do
   list <- get
   case list of
-    []      -> return Nothing
+    []      -> pure Nothing
     (h : l) -> let r = f h
                in  do case r of
                         Nothing -> put list
                         Just _  -> put l
-                      return r
+                      pure r
 
 -- | Get the next container of the specified type and return a list of all its
 -- ASN.1 elements. Throws a parse error if there is no next container of the
@@ -151,14 +151,14 @@ getNextContainer ty = do
     []                -> throwParseError "empty"
     (h : l)
       | h == Start ty -> do let (l1, l2) = getConstructedEnd 0 l
-                            put l2 >> return l1
+                            put l2 >> pure l1
       | otherwise     -> throwParseError "not an expected container"
 
 -- | Run the parse monad over the elements of the next container of specified
 -- type. Throws an error if there is no next container of the specified type.
 onNextContainer :: ASN1ConstructionType -> ParseASN1 a -> ParseASN1 a
 onNextContainer ty f =
-  getNextContainer ty >>= either throwParseError return . runParseASN1 f
+  getNextContainer ty >>= either throwParseError pure . runParseASN1 f
 
 -- | As for 'getNextContainer', except that it does not throw an error if there
 -- is no next container of the specified type.
@@ -166,11 +166,11 @@ getNextContainerMaybe :: ASN1ConstructionType -> ParseASN1 (Maybe [ASN1])
 getNextContainerMaybe ty = do
   list <- get
   case list of
-    []                -> return Nothing
+    []                -> pure Nothing
     (h : l)
       | h == Start ty -> do let (l1, l2) = getConstructedEnd 0 l
-                            put l2 >> return (Just l1)
-      | otherwise     -> return Nothing
+                            put l2 >> pure (Just l1)
+      | otherwise     -> pure Nothing
 
 -- | As for 'onNextContainer', except that it does not throw an error if there
 -- is no next container of the specified type.
@@ -181,8 +181,8 @@ onNextContainerMaybe ::
 onNextContainerMaybe ty f = do
   n <- getNextContainerMaybe ty
   case n of
-    Just l  -> either throwParseError (return . Just) $ runParseASN1 f l
-    Nothing -> return Nothing
+    Just l  -> either throwParseError (pure . Just) $ runParseASN1 f l
+    Nothing -> pure Nothing
 
 -- | Are there any more ASN.1 items in the stream?
 hasNext :: ParseASN1 Bool
