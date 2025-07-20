@@ -1,11 +1,11 @@
-cabal-version: 1.18
+cabal-version: 1.22
 
 -- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           crypton-asn1-parse
-version:        0.9.5
+version:        0.9.6
 synopsis:       A monadic parser combinator for a ASN.1 stream.
 description:    A library providing a monadic parser combinator for use with a stream of
                 Abstract Syntax Notation One (ASN.1) standard values.
@@ -32,6 +32,8 @@ source-repository head
 library
   exposed-modules:
       Data.ASN1.Parse
+  reexported-modules:
+      Data.ASN1.Types
   hs-source-dirs:
       src
   other-extensions:
@@ -40,6 +42,5 @@ library
   build-depends:
       base >=4.13 && <5
     , bytestring
-    , crypton-asn1-encoding >=0.9
-    , crypton-asn1-types ==0.3.*
+    , crypton-asn1-types >=0.3.6 && <0.4
   default-language: Haskell98

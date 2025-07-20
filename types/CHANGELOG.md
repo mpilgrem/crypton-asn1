@@ -8,6 +8,8 @@ and this project adheres to the
 
 ## UNRELEASED
 
+* Expose `Data.ASN1.Stream`, spun out of the `crypton-asn1-encoding-0.9.6`
+  package.
 * Use `other-extensions` field in Cabal file.
 
 ## 0.3.5

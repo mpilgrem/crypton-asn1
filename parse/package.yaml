@@ -1,7 +1,7 @@
 spec-version: 0.36.0  # Avoid legacy behaviour of Hpack
 
 name: crypton-asn1-parse
-version: 0.9.5
+version: 0.9.6
 synopsis: A monadic parser combinator for a ASN.1 stream.
 description: |
   A library providing a monadic parser combinator for use with a stream of
@@ -27,9 +27,10 @@ library:
   dependencies:
   - base >= 4.13 && < 5
   - bytestring
-  - crypton-asn1-types >= 0.3 && < 0.4
-  - crypton-asn1-encoding >= 0.9
+  - crypton-asn1-types >= 0.3.6 && < 0.4
   exposed-modules:
   - Data.ASN1.Parse
+  reexported-modules:
+  - Data.ASN1.Types
   ghc-options:
   - -Wall

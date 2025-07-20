@@ -11,6 +11,9 @@ and this project adheres to the
 * Move library modules to directory `src`.
 * Drop support for GHC < 8.8.
 * Use `LANAGUAGE RankNTypes`, rather than `LANGUAGE Rank2Types`.
+* Use `other-extensions` field in Cabal file.
+* Module `Data.ASN1.Stream` spun out to dependency package
+  `crypton-asn1-types-0.3.6`.
 
 ## 0.9.6
 
