@@ -47,6 +47,10 @@ library
       Data.ASN1.Serialize
   hs-source-dirs:
       src
+  other-extensions:
+      CPP
+      RankNTypes
+      ViewPatterns
   ghc-options: -Wall
   build-depends:
       base >=4.13 && <5
@@ -74,6 +78,10 @@ test-suite tests-asn1-encoding
   hs-source-dirs:
       tests
       src
+  other-extensions:
+      CPP
+      RankNTypes
+      ViewPatterns
   ghc-options: -Wall
   build-depends:
       base >=4.13 && <5

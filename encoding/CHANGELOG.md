@@ -10,6 +10,7 @@ and this project adheres to the
 
 * Move library modules to directory `src`.
 * Drop support for GHC < 8.8.
+* Use `LANAGUAGE RankNTypes`, rather than `LANGUAGE Rank2Types`.
 
 ## 0.9.6
 

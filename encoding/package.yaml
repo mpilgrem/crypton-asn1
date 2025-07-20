@@ -20,6 +20,12 @@ extra-doc-files:
 - CHANGELOG.md
 - README.md
 
+other-extensions:
+- CPP
+- RankNTypes
+- ViewPatterns
+
+
 ghc-options:
 - -Wall
 

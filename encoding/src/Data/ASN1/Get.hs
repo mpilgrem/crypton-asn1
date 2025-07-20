@@ -1,5 +1,4 @@
-{-# LANGUAGE CPP        #-}
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RankNTypes #-}
 
 {- |
 Module      : Data.ASN1.Get
