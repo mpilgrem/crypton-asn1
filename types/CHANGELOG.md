@@ -6,11 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
-## UNRELEASED
+## 0.3.6
 
 * Expose `Data.ASN1.Stream`, spun out of the `crypton-asn1-encoding-0.9.6`
   package.
-* Use `other-extensions` field in Cabal file.
+* Use the `other-extensions` field in the Cabal file.
 
 ## 0.3.5
 
