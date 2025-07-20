@@ -20,11 +20,11 @@ import           Data.ByteString ( ByteString )
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
 
--- | Transform a list of ASN.1 Events into a strict bytestring.
+-- | Transform a list of ASN.1 events into a strict bytestring.
 toByteString :: [ASN1Event] -> ByteString
 toByteString = B.concat . L.toChunks . toLazyByteString
 
--- | Transform a list of ASN.1 Events into a lazy bytestring.
+-- | Transform a list of ASN.1 events into a lazy bytestring.
 toLazyByteString :: [ASN1Event] -> L.ByteString
 toLazyByteString evs = L.fromChunks $ loop [] evs
  where

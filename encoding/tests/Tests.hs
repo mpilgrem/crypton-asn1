@@ -47,14 +47,15 @@ arbitraryDefiniteLength :: Gen ASN1Length
 arbitraryDefiniteLength = arbitrary `suchThat` (/= LenIndefinite)
 
 arbitraryTag :: Gen ASN1Tag
-arbitraryTag = choose(1,10000)
+arbitraryTag = choose (1, 10000)
 
 instance Arbitrary ASN1Header where
   arbitrary = liftM4 ASN1Header arbitrary arbitraryTag arbitrary arbitrary
 
 arbitraryEvents :: Gen ASN1Events
 arbitraryEvents = do
-  hdr@(ASN1Header _ _ _ len) <- liftM4 ASN1Header arbitrary arbitraryTag (pure False) arbitraryDefiniteLength
+  hdr@(ASN1Header _ _ _ len) <-
+    liftM4 ASN1Header arbitrary arbitraryTag (pure False) arbitraryDefiniteLength
   let blen = case len of
         LenLong _ x -> x
         LenShort x  -> x

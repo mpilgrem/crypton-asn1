@@ -11,9 +11,9 @@ Tools to read ASN1 primitive (e.g. boolean, int)
 -}
 
 module Data.ASN1.Prim
-  ( -- * ASN1 high level algebraic type
-    ASN1(..)
-  , ASN1ConstructionType(..)
+  ( -- * ASN.1 high-level algebraic types
+    ASN1 (..)
+  , ASN1ConstructionType (..)
 
   , encodeHeader
   , encodePrimitiveHeader
@@ -24,7 +24,7 @@ module Data.ASN1.Prim
   , encodeOne
   , mkSmallestLength
 
-    -- * marshall an ASN1 type from a val struct or a bytestring
+    -- * Marshall an ASN.1 value from a val struct or a strict bytestring
   , getBoolean
   , getInteger
   , getDouble
@@ -34,7 +34,7 @@ module Data.ASN1.Prim
   , getOID
   , getTime
 
-    -- * marshall an ASN1 type to a bytestring
+    -- * Marshall an ASN.1 value to a strict bytestring
   , putTime
   , putInteger
   , putDouble
@@ -335,7 +335,8 @@ getOID s = case B.unpack s of
     )
  where
   groupOID :: [Word8] -> [Integer]
-  groupOID = map (foldl (\acc n -> (acc `shiftL` 7) + fromIntegral n) 0) . groupSubOID
+  groupOID =
+    map (foldl (\acc n -> (acc `shiftL` 7) + fromIntegral n) 0) . groupSubOID
 
   groupSubOIDHelper [] = Nothing
   groupSubOIDHelper l  = Just $ spanSubOIDbound l

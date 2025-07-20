@@ -9,16 +9,16 @@ Raw encoding of binary format (BER/DER/CER)
 -}
 
 module Data.ASN1.BinaryEncoding.Raw
-  ( -- * types
+  ( -- * Types
     ASN1Header (..)
   , ASN1Class (..)
   , ASN1Tag
   , ASN1Length (..)
   , ASN1Event (..)
-    -- * parser
+    -- * Parser
   , parseLBS
   , parseBS
-    -- * writer
+    -- * Writer
   , toLazyByteString
   , toByteString
     ) where

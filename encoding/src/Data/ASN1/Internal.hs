@@ -57,7 +57,7 @@ intOfBytes b
   maxIntLen = 2 ^ (8 * len) - 1
   isNeg     = testBit (B.head b) 7
 
--- | Convert an integer into a two's completemented list of bytes .
+-- | Convert an integer into a two's completemented list of bytes.
 bytesOfInt :: Integer -> NonEmpty Word8
 bytesOfInt i
   | i > 0     = if testBit (NE.head uints) 7 then 0 <| uints else uints
