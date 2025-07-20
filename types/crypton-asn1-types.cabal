@@ -38,6 +38,8 @@ library
       Data.ASN1.Types.Lowlevel
   hs-source-dirs:
       src
+  other-extensions:
+      CPP
   ghc-options: -Wall
   build-depends:
       base >=3 && <5

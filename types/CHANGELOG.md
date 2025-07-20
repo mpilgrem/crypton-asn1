@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELEASED
+
+* Use `other-extensions` field in Cabal file.
+
 ## 0.3.5
 
 * Move library modules to directory `src`.
