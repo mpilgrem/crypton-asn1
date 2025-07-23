@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELEASED
+
+* Drop module `Data.ASN1.Object`, deprecated since `asn1-encoding-0.8.0`. Use
+  module `Data.ASN1.Types`.
+* Reexport module `Data.ASN1.Types` from package `crypton-asn1-types`.
+
 ## 0.9.7
 
 * Move library modules to directory `src`.
