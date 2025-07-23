@@ -5,7 +5,7 @@ cabal-version: 1.22
 -- see: https://github.com/sol/hpack
 
 name:           crypton-asn1-parse
-version:        0.9.6
+version:        0.9.7
 synopsis:       A monadic parser combinator for a ASN.1 stream.
 description:    A library providing a monadic parser combinator for use with a stream of
                 Abstract Syntax Notation One (ASN.1) standard values.
@@ -42,5 +42,5 @@ library
   build-depends:
       base >=4.13 && <5
     , bytestring
-    , crypton-asn1-types >=0.3.6 && <0.4
+    , crypton-asn1-types ==0.4.*
   default-language: Haskell98

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELASED
+
+* Depend on package `time-hourglass`, rather than `hourglass`. The fields of the
+  `ASNTime` data constructor of data type `ASN1` are now types provided by the
+  former package.
+
 ## 0.3.6
 
 * Expose `Data.ASN1.Stream`, spun out of the `crypton-asn1-encoding-0.9.6`

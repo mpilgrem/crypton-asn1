@@ -56,8 +56,8 @@ library
   build-depends:
       base >=4.13 && <5
     , bytestring
-    , crypton-asn1-types >=0.3.6 && <0.4
-    , hourglass >=0.2.6
+    , crypton-asn1-types ==0.4.*
+    , time-hourglass
   default-language: Haskell2010
 
 test-suite tests-asn1-encoding
@@ -86,9 +86,9 @@ test-suite tests-asn1-encoding
       base >=4.13 && <5
     , bytestring
     , crypton-asn1-encoding
-    , crypton-asn1-types >=0.3.6 && <0.4
-    , hourglass
+    , crypton-asn1-types ==0.4.*
     , mtl
     , tasty
     , tasty-quickcheck
+    , time-hourglass
   default-language: Haskell2010
