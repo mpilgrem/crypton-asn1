@@ -1,7 +1,7 @@
 spec-version: 0.36.0 # Avoid legacy behaviour of Hpack
 
 name: crypton-asn1-encoding
-version: 0.9.7
+version: 0.10.0
 synopsis: ASN.1 data (raw, BER or DER) readers and writers
 description: |
   A library providing readers and writers of data following the Abstract Syntax
