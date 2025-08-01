@@ -6,4 +6,4 @@ packages:
 - types
 
 extra-deps:
-- time-hourglass-0.2.13@sha256:74aebb75bd7433e69483a362b45c7f83ce7a739d994a729e00ea962d693d7480,2805
+- time-hourglass-0.3.0@sha256:ee02356fe24919ec43ae17fc0007398c2fd0bbe822833b2d7a9c849537b90580,3114
