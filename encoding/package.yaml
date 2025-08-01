@@ -29,6 +29,11 @@ dependencies:
 ghc-options:
 - -Wall
 
+other-extensions:
+- CPP
+- RankNTypes
+- ViewPatterns
+
 library:
   source-dirs: src
   exposed-modules:
@@ -40,10 +45,6 @@ library:
   reexported-modules:
   - Data.ASN1.Stream
   - Data.ASN1.Types
-  other-extensions:
-  - CPP
-  - RankNTypes
-  - ViewPatterns
 
 tests:
   tests-asn1-encoding:
@@ -52,7 +53,6 @@ tests:
     - src
     main: Tests.hs
     dependencies:
-    - mtl
     - tasty
     - tasty-quickcheck
     - crypton-asn1-encoding

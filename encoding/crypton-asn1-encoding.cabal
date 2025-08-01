@@ -87,7 +87,6 @@ test-suite tests-asn1-encoding
     , bytestring
     , crypton-asn1-encoding
     , crypton-asn1-types ==0.4.*
-    , mtl
     , tasty
     , tasty-quickcheck
     , time-hourglass <0.4

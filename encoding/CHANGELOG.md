@@ -14,6 +14,7 @@ and this project adheres to the
 * Drop module `Data.ASN1.Object`, deprecated since `asn1-encoding-0.8.0`. Use
   module `Data.ASN1.Types`.
 * Reexport module `Data.ASN1.Types` from package `crypton-asn1-types`.
+* Drop unused dependency on `mtl` by test suite.
 
 ## 0.9.7 - 2025-07-20
 
