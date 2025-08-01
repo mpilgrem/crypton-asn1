@@ -20,16 +20,11 @@ extra-doc-files:
 - CHANGELOG.md
 - README.md
 
-other-extensions:
-- CPP
-- RankNTypes
-- ViewPatterns
-
 dependencies:
 - base >= 4.13 && < 5
 - bytestring
 - crypton-asn1-types >= 0.4 && < 0.5
-- time-hourglass
+- time-hourglass < 0.4
 
 ghc-options:
 - -Wall
@@ -45,6 +40,10 @@ library:
   reexported-modules:
   - Data.ASN1.Stream
   - Data.ASN1.Types
+  other-extensions:
+  - CPP
+  - RankNTypes
+  - ViewPatterns
 
 tests:
   tests-asn1-encoding:

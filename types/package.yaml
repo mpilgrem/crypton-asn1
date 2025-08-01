@@ -28,7 +28,7 @@ library:
   - base >= 3 && < 5
   - base16
   - bytestring
-  - time-hourglass
+  - time-hourglass < 0.4
   exposed-modules:
   - Data.ASN1.BitArray
   - Data.ASN1.OID

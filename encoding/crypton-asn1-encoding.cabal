@@ -57,7 +57,7 @@ library
       base >=4.13 && <5
     , bytestring
     , crypton-asn1-types ==0.4.*
-    , time-hourglass
+    , time-hourglass <0.4
   default-language: Haskell2010
 
 test-suite tests-asn1-encoding
@@ -90,5 +90,5 @@ test-suite tests-asn1-encoding
     , mtl
     , tasty
     , tasty-quickcheck
-    , time-hourglass
+    , time-hourglass <0.4
   default-language: Haskell2010
