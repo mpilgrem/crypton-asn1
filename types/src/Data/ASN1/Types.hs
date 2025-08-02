@@ -22,7 +22,7 @@ module Data.ASN1.Types
   ) where
 
 import           Data.ASN1.BitArray ( BitArray )
-import           Data.ASN1.OID ( OID )
+import           Data.ASN1.OID
 import           Data.ASN1.Types.Lowlevel ( ASN1Class (..), ASN1Tag )
 import           Data.ASN1.Types.String
                    ( ASN1CharacterString (..), ASN1StringEncoding (..)

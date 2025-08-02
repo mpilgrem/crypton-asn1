@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## 0.3.7
+
+* `Data.ASN1.Types` re-exports all of `Data.ASN1.OID`, as in
+  `crypton-asn1-types-0.3.4`.
+
 ## 0.3.6
 
 * Expose `Data.ASN1.Stream`, spun out of the `crypton-asn1-encoding-0.9.6`

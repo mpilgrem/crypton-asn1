@@ -1,7 +1,7 @@
 spec-version: 0.36.0 # Avoid legacy behaviour of Hpack
 
 name: crypton-asn1-types
-version: 0.3.6
+version: 0.3.7
 synopsis: ASN.1 types
 description: |
   A library providing types representing the Abstract Syntax Notation One
