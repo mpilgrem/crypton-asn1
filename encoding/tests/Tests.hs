@@ -1,11 +1,13 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 import           Control.Monad ( liftM4, replicateM )
-import           Data.ASN1.BinaryEncoding ( DER (..) )
+import           Data.ASN1.BinaryEncoding ( DER (..), decodeDER, decodeDER' )
 import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.BitArray ( BitArray, toBitArray )
-import           Data.ASN1.Encoding ( ASN1Decoding (..), ASN1Encoding (..) )
+import           Data.ASN1.Encoding
+                   ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1'
+                   )
 import           Data.ASN1.Get ( Result (..), runGet )
 import           Data.ASN1.Prim ( mkSmallestLength )
 import           Data.ASN1.Serialize ( getHeader, putHeader )
@@ -19,6 +21,7 @@ import           Data.ASN1.Types.Lowlevel
                    , ASN1Length (..), ASN1Tag
                    )
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as L
 import           Data.Hourglass
                    ( Date (..), DateTime (..), Elapsed (..), Hours (..)
                    , Minutes (..), Month (..), Seconds (..), TimeOfDay (..)
@@ -237,6 +240,13 @@ prop_asn1_der_marshalling_id v =
         error ("got: " ++ show got ++ " expected: " ++ show expected)
     | otherwise       = True
 
+prop_der_decoding_helpers_match :: [ASN1] -> Bool
+prop_der_decoding_helpers_match values =
+  let lazyEncoding = encodeASN1 DER values
+      strictEncoding = L.toStrict lazyEncoding
+  in  decodeDER lazyEncoding == decodeASN1 DER lazyEncoding
+      && decodeDER' strictEncoding == decodeASN1' DER strictEncoding
+
 prop_real_der_marshalling_id :: Double -> Bool
 prop_real_der_marshalling_id v =
   (decodeASN1 DER . encodeASN1 DER) [Real v] `assertEq` Right [Real v]
@@ -261,6 +271,7 @@ marshallingTests = testGroup "Marshalling"
   [ testProperty "Header" prop_header_marshalling_id
   , testProperty "Event"  prop_event_marshalling_id
   , testProperty "DER"    prop_asn1_der_marshalling_id
+  , testProperty "DER decoding helpers" prop_der_decoding_helpers_match
   , testProperty "Real"   prop_real_der_marshalling_id
   , testProperty "Integral Real"   prop_integral_real_der_marshalling_id
   ]

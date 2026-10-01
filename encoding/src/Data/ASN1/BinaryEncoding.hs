@@ -11,6 +11,8 @@ A module containing ASN.1 BER and DER specification encoding/decoding.
 module Data.ASN1.BinaryEncoding
   ( BER (..)
   , DER (..)
+  , decodeDER
+  , decodeDER'
   ) where
 
 import qualified Control.Exception as E
@@ -18,6 +20,7 @@ import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.Encoding
                    ( ASN1Decoding (..), ASN1DecodingRepr (..), ASN1Encoding (..)
+                   , decodeASN1'
                    )
 import           Data.ASN1.Error ( ASN1Error (..) )
 import           Data.ASN1.Prim
@@ -28,6 +31,8 @@ import           Data.ASN1.Types.Lowlevel
                    ( ASN1Class (..), ASN1Event (..), ASN1Header (..)
                    , ASN1Length (..)
                    )
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as L
 
 -- | Basic Encoding Rules (BER).
 data BER = BER
@@ -51,6 +56,16 @@ instance ASN1Decoding DER where
 
 instance ASN1Encoding DER where
   encodeASN1 _ l = toLazyByteString $ encodeToRaw l
+
+-- | Decode a lazy bytestring as DER without a runtime encoding witness.
+-- This delegates to the existing DER decoder instance.
+decodeDER :: L.ByteString -> Either ASN1Error [ASN1]
+decodeDER = decodeASN1 DER
+
+-- | Decode a strict bytestring as DER without a runtime encoding witness.
+-- This preserves the strict-input behavior of the generic @decodeASN1'@.
+decodeDER' :: B.ByteString -> Either ASN1Error [ASN1]
+decodeDER' = decodeASN1' DER
 
 decodeConstruction :: ASN1Header -> ASN1ConstructionType
 decodeConstruction (ASN1Header Universal 0x10 _ _) = Sequence
