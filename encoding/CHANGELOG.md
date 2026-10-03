@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## Unreleased
+
+* `decodeASN1'` and the other decoding functions return a malformed value as
+  `Left`, rather than throwing it when the result is evaluated.
+* Refuse an empty BIT STRING, and one with unused bits but no subsequent
+  octets.
+
 ## 0.10.0 - 2025-08-01
 
 * Depend on package `time-hourglass`, rather than `hourglass`. The fields of

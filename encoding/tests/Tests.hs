@@ -5,7 +5,8 @@ import           Data.ASN1.BinaryEncoding ( DER (..) )
 import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.BitArray ( BitArray, toBitArray )
-import           Data.ASN1.Encoding ( ASN1Decoding (..), ASN1Encoding (..) )
+import           Data.ASN1.Encoding
+                   ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1' )
 import           Data.ASN1.Get ( Result (..), runGet )
 import           Data.ASN1.Prim ( mkSmallestLength )
 import           Data.ASN1.Serialize ( getHeader, putHeader )
@@ -27,7 +28,7 @@ import           Data.Hourglass
 import           Test.Tasty ( TestTree, defaultMain, testGroup )
 import           Test.Tasty.QuickCheck
                    ( Arbitrary (..), Gen, choose, elements, listOf1, oneof
-                   , resize, suchThat, testProperty
+                   , once, resize, suchThat, testProperty
                    )
 
 instance Arbitrary ASN1Class where
@@ -92,7 +93,8 @@ instance Arbitrary B.ByteString where
 instance Arbitrary BitArray where
   arbitrary = do
     bs <- arbitrary
-    w  <- choose (0, 7) :: Gen Int
+    -- X.690 8.6.2.3: with no octets, there are no unused bits either.
+    w  <- if B.null bs then pure 0 else choose (0, 7) :: Gen Int
     pure $ toBitArray bs w
 
 instance Arbitrary Date where
@@ -265,5 +267,23 @@ marshallingTests = testGroup "Marshalling"
   , testProperty "Integral Real"   prop_integral_real_der_marshalling_id
   ]
 
+-- | Malformed input is a 'Left', not an exception thrown when the result is
+-- looked at.  Each is the DER signature @30 06 02 01 01 02 01 01@ broken.
+malformedTests :: TestTree
+malformedTests = testGroup "Malformed"
+  [ testProperty "primitive SEQUENCE" $ isMalformed
+      [0x10, 0x06, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01]
+  , testProperty "BIT STRING with unused bits and no octets" $ isMalformed
+      [0x30, 0x06, 0x03, 0x01, 0x01, 0x02, 0x01, 0x01]
+  , testProperty "BIT STRING with too many unused bits" $ isMalformed
+      [0x30, 0x06, 0x02, 0x01, 0x01, 0x03, 0x01, 0x09]
+  , testProperty "empty BIT STRING" $ isMalformed
+      [0x30, 0x05, 0x02, 0x01, 0x01, 0x03, 0x00]
+  ]
+ where
+  isMalformed ws = once $ case decodeASN1' DER (B.pack ws) of
+    Left _  -> True
+    Right _ -> False
+
 main :: IO ()
-main = defaultMain $ testGroup "asn1-encoding" [marshallingTests]
+main = defaultMain $ testGroup "asn1-encoding" [marshallingTests, malformedTests]

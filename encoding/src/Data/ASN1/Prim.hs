@@ -298,20 +298,25 @@ getExponentLength len h s =
       | otherwise -> pure $ l + 1
 
 getBitString :: ByteString -> Either ASN1Error ASN1
-getBitString s =
-  let toSkip = B.head s in
-  let toSkip' = if toSkip >= 48 && toSkip <= 48 + 7
-        then toSkip - fromIntegral ( ord '0')
-        else toSkip in
-  let xs = B.tail s in
-  if toSkip' >= 0 && toSkip' <= 7
-    then Right $ BitString $ toBitArray xs (fromIntegral toSkip')
-    else Left $ TypeDecodingFailed
-      (  "bitstring: skip number not within bound "
-      ++ show toSkip'
-      ++ " "
-      ++  show s
-      )
+getBitString s = case B.uncons s of
+  Nothing -> Left $ TypeDecodingFailed "bitstring: no data"
+  Just (toSkip, xs) ->
+    let toSkip' = if toSkip >= 48 && toSkip <= 48 + 7
+          then toSkip - fromIntegral ( ord '0')
+          else toSkip
+    in  if toSkip' >= 0 && toSkip' <= 7
+          -- X.690 8.6.2.3: with no subsequent octets, the number of unused
+          -- bits is zero.
+          then if B.null xs && toSkip' /= 0
+            then Left $ TypeDecodingFailed
+              "bitstring: unused bits without subsequent octets"
+            else Right $ BitString $ toBitArray xs (fromIntegral toSkip')
+          else Left $ TypeDecodingFailed
+            (  "bitstring: skip number not within bound "
+            ++ show toSkip'
+            ++ " "
+            ++  show s
+            )
 
 getCharacterString :: ASN1StringEncoding -> ByteString -> Either ASN1Error ASN1
 getCharacterString encoding bs = Right $ ASN1String (ASN1CharacterString encoding bs)

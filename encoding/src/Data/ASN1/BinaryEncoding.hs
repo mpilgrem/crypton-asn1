@@ -13,7 +13,6 @@ module Data.ASN1.BinaryEncoding
   , DER (..)
   ) where
 
-import qualified Control.Exception as E
 import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.Encoding
@@ -36,18 +35,18 @@ data BER = BER
 data DER = DER
 
 instance ASN1DecodingRepr BER where
-  decodeASN1Repr _ lbs = decodeEventASN1Repr (const Nothing) `fmap` parseLBS lbs
+  decodeASN1Repr _ lbs = parseLBS lbs >>= decodeEventASN1Repr (const Nothing)
 
 instance ASN1Decoding BER where
   decodeASN1 _ lbs =
-    (map fst . decodeEventASN1Repr (const Nothing)) `fmap` parseLBS lbs
+    map fst <$> (parseLBS lbs >>= decodeEventASN1Repr (const Nothing))
 
 instance ASN1DecodingRepr DER where
-  decodeASN1Repr _ lbs = decodeEventASN1Repr checkDER `fmap` parseLBS lbs
+  decodeASN1Repr _ lbs = parseLBS lbs >>= decodeEventASN1Repr checkDER
 
 instance ASN1Decoding DER where
   decodeASN1 _ lbs =
-    (map fst . decodeEventASN1Repr checkDER) `fmap` parseLBS lbs
+    map fst <$> (parseLBS lbs >>= decodeEventASN1Repr checkDER)
 
 instance ASN1Encoding DER where
   encodeASN1 _ l = toLazyByteString $ encodeToRaw l
@@ -57,24 +56,30 @@ decodeConstruction (ASN1Header Universal 0x10 _ _) = Sequence
 decodeConstruction (ASN1Header Universal 0x11 _ _) = Set
 decodeConstruction (ASN1Header c t _ _)            = Container c t
 
-decodeEventASN1Repr :: (ASN1Header -> Maybe ASN1Error) -> [ASN1Event] -> [ASN1Repr]
-decodeEventASN1Repr checkHeader = loop []
+-- | An error is returned as 'Left' rather than thrown, so that it reaches
+-- the caller of 'decodeASN1' and 'decodeASN1Repr' as the type says.
+decodeEventASN1Repr ::
+     (ASN1Header -> Maybe ASN1Error)
+  -> [ASN1Event]
+  -> Either ASN1Error [ASN1Repr]
+decodeEventASN1Repr checkHeader = loop [] []
  where
-  loop _ []     = []
-  loop acc (h@(Header hdr@(ASN1Header _ _ True _)):ConstructionBegin:xs) =
+  loop out _ [] = Right $ reverse out
+  loop out acc (h@(Header hdr@(ASN1Header _ _ True _)):ConstructionBegin:xs) =
     let ctype = decodeConstruction hdr
     in  case checkHeader hdr of
-          Nothing  -> (Start ctype,[h,ConstructionBegin]) : loop (ctype:acc) xs
-          Just err -> E.throw err
-  loop acc (h@(Header hdr@(ASN1Header _ _ False _)):p@(Primitive prim):xs) =
+          Nothing  ->
+            loop ((Start ctype, [h, ConstructionBegin]) : out) (ctype:acc) xs
+          Just err -> Left err
+  loop out acc (h@(Header hdr@(ASN1Header _ _ False _)):p@(Primitive prim):xs) =
     case checkHeader hdr of
       Nothing -> case decodePrimitive hdr prim of
-        Left err  -> E.throw err
-        Right obj -> (obj, [h, p]) : loop acc xs
-      Just err -> E.throw err
-  loop (ctype:acc) (ConstructionEnd:xs) =
-    (End ctype, [ConstructionEnd]) : loop acc xs
-  loop _ (x:_) = E.throw $ StreamUnexpectedSituation (show x)
+        Left err  -> Left err
+        Right obj -> loop ((obj, [h, p]) : out) acc xs
+      Just err -> Left err
+  loop out (ctype:acc) (ConstructionEnd:xs) =
+    loop ((End ctype, [ConstructionEnd]) : out) acc xs
+  loop _ _ (x:_) = Left $ StreamUnexpectedSituation (show x)
 
 -- | DER header need to be all of finite size and of minimum possible size.
 checkDER :: ASN1Header -> Maybe ASN1Error
