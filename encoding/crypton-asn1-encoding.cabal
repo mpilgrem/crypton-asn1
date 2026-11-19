@@ -1,11 +1,11 @@
 cabal-version: 1.22
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.6.
 --
 -- see: https://github.com/sol/hpack
 
 name:           crypton-asn1-encoding
-version:        0.10.0
+version:        0.11.0
 synopsis:       ASN.1 data (raw, BER or DER) readers and writers
 description:    A library providing readers and writers of data following the Abstract Syntax
                 Notation One (ASN.1) standard in raw form or in the high-level forms of Basic
