@@ -8,6 +8,10 @@ and this project adheres to the
 
 ## Unreleased
 
+* `decodeASN1'` and the other decoding functions return a malformed value as
+  `Left`, rather than throwing it when the result is evaluated.
+* Refuse an empty BIT STRING, and one with unused bits but no subsequent
+  octets.
 * Add strict and lazy DER decoding entry points that do not require callers to
   pass a runtime `DER` witness.
 

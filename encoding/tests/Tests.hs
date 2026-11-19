@@ -6,8 +6,7 @@ import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.BitArray ( BitArray, toBitArray )
 import           Data.ASN1.Encoding
-                   ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1'
-                   )
+                   ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1' )
 import           Data.ASN1.Get ( Result (..), runGet )
 import           Data.ASN1.Prim ( mkSmallestLength )
 import           Data.ASN1.Serialize ( getHeader, putHeader )
@@ -30,7 +29,7 @@ import           Data.Hourglass
 import           Test.Tasty ( TestTree, defaultMain, testGroup )
 import           Test.Tasty.QuickCheck
                    ( Arbitrary (..), Gen, choose, elements, listOf1, oneof
-                   , resize, suchThat, testProperty
+                   , once, resize, suchThat, testProperty
                    )
 
 instance Arbitrary ASN1Class where
@@ -95,19 +94,20 @@ instance Arbitrary B.ByteString where
 instance Arbitrary BitArray where
   arbitrary = do
     bs <- arbitrary
-    w  <- choose (0, 7) :: Gen Int
+    -- X.690 8.6.2.3: with no octets, there are no unused bits either.
+    w  <- if B.null bs then pure 0 else choose (0, 7) :: Gen Int
     pure $ toBitArray bs w
 
 instance Arbitrary Date where
   arbitrary = do
-    y <- choose (1951, 2050)
+    y <- choose (1950, 2049)
     m <- elements [ January .. December]
     d <- choose (1, 30)
     pure $ normalizeDate $ Date y m d
 
 normalizeDate :: Date -> Date
 normalizeDate origDate
-  | y < 1951  = normalizeDate (Date (y + 50) m d)
+  | y < 1950  = normalizeDate (Date (y + 50) m d)
   | otherwise = normalizedDate
  where
   normalizedDate@(Date y m d) = timeConvert (timeConvert origDate :: Elapsed)
@@ -266,6 +266,15 @@ prop_integral_real_der_marshalling_id v =
         error ("got: " ++ show got ++ " expected: " ++ show expected)
     | otherwise       = True
 
+-- | UTCTime years 50-99 are 1950-1999 and 00-49 are 2000-2049.
+prop_utctime_pivot :: Bool
+prop_utctime_pivot =
+  year "500101000000Z" == Right 1950 && year "491231235959Z" == Right 2049
+ where
+  year s = case decodeASN1' DER (B.pack (0x17 : 13 : map (fromIntegral . fromEnum) s)) of
+    Right [ASN1Time TimeUTC (DateTime (Date y _ _) _) _] -> Right y
+    r -> Left (show r)
+
 marshallingTests :: TestTree
 marshallingTests = testGroup "Marshalling"
   [ testProperty "Header" prop_header_marshalling_id
@@ -274,7 +283,26 @@ marshallingTests = testGroup "Marshalling"
   , testProperty "DER decoding helpers" prop_der_decoding_helpers_match
   , testProperty "Real"   prop_real_der_marshalling_id
   , testProperty "Integral Real"   prop_integral_real_der_marshalling_id
+  , testProperty "UTCTime pivot"   prop_utctime_pivot
   ]
 
+-- | Malformed input is a 'Left', not an exception thrown when the result is
+-- looked at.  Each is the DER signature @30 06 02 01 01 02 01 01@ broken.
+malformedTests :: TestTree
+malformedTests = testGroup "Malformed"
+  [ testProperty "primitive SEQUENCE" $ isMalformed
+      [0x10, 0x06, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01]
+  , testProperty "BIT STRING with unused bits and no octets" $ isMalformed
+      [0x30, 0x06, 0x03, 0x01, 0x01, 0x02, 0x01, 0x01]
+  , testProperty "BIT STRING with too many unused bits" $ isMalformed
+      [0x30, 0x06, 0x02, 0x01, 0x01, 0x03, 0x01, 0x09]
+  , testProperty "empty BIT STRING" $ isMalformed
+      [0x30, 0x05, 0x02, 0x01, 0x01, 0x03, 0x00]
+  ]
+ where
+  isMalformed ws = once $ case decodeASN1' DER (B.pack ws) of
+    Left _  -> True
+    Right _ -> False
+
 main :: IO ()
-main = defaultMain $ testGroup "asn1-encoding" [marshallingTests]
+main = defaultMain $ testGroup "asn1-encoding" [marshallingTests, malformedTests]
