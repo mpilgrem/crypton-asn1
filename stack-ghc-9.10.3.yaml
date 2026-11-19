@@ -1,4 +1,4 @@
-snapshot: lts-24.2 # GHC 9.10.2
+snapshot: lts-24.67 # GHC 9.10.3
 
 packages:
 - encoding
