@@ -5,7 +5,7 @@ import           Data.ASN1.BinaryEncoding ( DER (..) )
 import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.BitArray ( BitArray, toBitArray )
-import           Data.ASN1.Encoding ( ASN1Decoding (..), ASN1Encoding (..) )
+import           Data.ASN1.Encoding ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1' )
 import           Data.ASN1.Get ( Result (..), runGet )
 import           Data.ASN1.Prim ( mkSmallestLength )
 import           Data.ASN1.Serialize ( getHeader, putHeader )
@@ -97,14 +97,14 @@ instance Arbitrary BitArray where
 
 instance Arbitrary Date where
   arbitrary = do
-    y <- choose (1951, 2050)
+    y <- choose (1950, 2049)
     m <- elements [ January .. December]
     d <- choose (1, 30)
     pure $ normalizeDate $ Date y m d
 
 normalizeDate :: Date -> Date
 normalizeDate origDate
-  | y < 1951  = normalizeDate (Date (y + 50) m d)
+  | y < 1950  = normalizeDate (Date (y + 50) m d)
   | otherwise = normalizedDate
  where
   normalizedDate@(Date y m d) = timeConvert (timeConvert origDate :: Elapsed)
@@ -256,6 +256,15 @@ prop_integral_real_der_marshalling_id v =
         error ("got: " ++ show got ++ " expected: " ++ show expected)
     | otherwise       = True
 
+-- | UTCTime years 50-99 are 1950-1999 and 00-49 are 2000-2049.
+prop_utctime_pivot :: Bool
+prop_utctime_pivot =
+  year "500101000000Z" == Right 1950 && year "491231235959Z" == Right 2049
+ where
+  year s = case decodeASN1' DER (B.pack (0x17 : 13 : map (fromIntegral . fromEnum) s)) of
+    Right [ASN1Time TimeUTC (DateTime (Date y _ _) _) _] -> Right y
+    r -> Left (show r)
+
 marshallingTests :: TestTree
 marshallingTests = testGroup "Marshalling"
   [ testProperty "Header" prop_header_marshalling_id
@@ -263,6 +272,7 @@ marshallingTests = testGroup "Marshalling"
   , testProperty "DER"    prop_asn1_der_marshalling_id
   , testProperty "Real"   prop_real_der_marshalling_id
   , testProperty "Integral Real"   prop_integral_real_der_marshalling_id
+  , testProperty "UTCTime pivot"   prop_utctime_pivot
   ]
 
 main :: IO ()

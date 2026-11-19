@@ -369,7 +369,8 @@ getTime timeType bs
 
   adjustUTC dt@(DateTime (Date y m d) tod)
     | timeType == TimeGeneralized = dt
-    | y > 2050 = DateTime (Date (y - 100) m d) tod
+    -- RFC 5280 4.1.2.5.1: YY >= 50 is 19YY
+    | y >= 2050 = DateTime (Date (y - 100) m d) tod
     | otherwise = dt
   formatNoSeconds = init format
   format
