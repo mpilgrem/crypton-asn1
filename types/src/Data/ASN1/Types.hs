@@ -41,7 +41,8 @@ data ASN1ConstructionType =
 -- | Different ASN.1 time representations.
 data ASN1TimeType =
     TimeUTC
-    -- ^ ASN.1 UTCTime Type: limited between 1950-2050.
+    -- ^ ASN.1 UTCTime Type. Values limited between 1950-01-01 00:00:00 and
+    -- 2049-12-31 23:59:59.
   | TimeGeneralized
     -- ^ ASN.1 GeneralizedTime Type.
   deriving (Eq, Ord, Show)
