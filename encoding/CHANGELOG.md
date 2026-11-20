@@ -14,6 +14,8 @@ and this project adheres to the
   empty, rather than throwing an exception.
 * `getBitString` now yields type decoding failed, as `Left`, if unused bits in
   the final subsequent octet are specified but there are no subsequent octets.
+* Add strict and lazy DER decoding entry points that do not require callers to
+  pass a runtime `DER` witness.
 
 ## 0.10.0 - 2025-08-01
 
