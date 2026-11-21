@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## UNRELEASED
+
+* Module `Data.ASN1.Encoding` uses more expressive type variables in signatures,
+  allowing better error messages.
+
 ## 0.11.0 - 2026-11-19
 
 * `decodeASN1'` and the other decoding functions return a malformed value as
