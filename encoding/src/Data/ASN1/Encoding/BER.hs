@@ -3,13 +3,41 @@ Module      : Data.ASN1.Encoding.BER
 License     : BSD-style
 Stability   : experimental
 
-BER-specific interface to the generic ASN.1 codec.
+Abstract Syntax Notation One (ASN.1) decoding interface, using Basic Encoding
+Rules (BER).
 
-This module specialises the existing generic operations with the BER marker;
-it does not implement another parser or change their validation or errors.
-The generic type classes and marker API remain available for callers selecting
-rules polymorphically. Import this module qualified to make the rules explicit
-at each call. BER encoding is not provided.
+This module is intended to be imported qualified, to avoid name clashes with
+"Data.ASN1.Encoding" or "Data.ASN1.Encoding.DER" functions. For example:
+
+> import qualified Data.ASN1.Encoding.BER as BER
+
+For example (lazy bytestring):
+
+> module Main ( main ) where
+>
+> import qualified Data.ASN1.Encoding.BER as BER
+> import qualified Data.ByteString.Lazy as B
+>
+> main :: IO ()
+> main = do
+>   bs <- B.readFile "octets"
+>   case BER.decodeASN1 bs of
+>     Right asn1s -> print asn1s
+>     Left asn1Error -> putStrLn $ "Error: " <> show asn1Error
+
+or (strict bytestring):
+
+> module Main ( main ) where
+>
+> import qualified Data.ASN1.Encoding.BER as BER
+> import qualified Data.ByteString as B
+>
+> main :: IO ()
+> main = do
+>   bs <- B.readFile "octets"
+>   case BER.decodeASN1' bs of
+>     Right asn1s -> print asn1s
+>     Left asn1Error -> putStrLn $ "Error: " <> show asn1Error
 -}
 
 module Data.ASN1.Encoding.BER
@@ -29,18 +57,18 @@ import           Data.ASN1.Types ( ASN1 )
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
 
--- | Decode a lazy BER bytestring.
+-- | Decode a lazy bytestring into a list of ASN.1 values, using BER.
 decodeASN1 :: L.ByteString -> Either ASN1Error [ASN1]
 decodeASN1 = Generic.decodeASN1 BER
 
--- | Decode a lazy BER bytestring with its representation.
+-- | Decode a lazy bytestring into a list of 'ASN1Repr' pairs, using BER.
 decodeASN1Repr :: L.ByteString -> Either ASN1Error [ASN1Repr]
 decodeASN1Repr = Generic.decodeASN1Repr BER
 
--- | Decode a strict BER bytestring.
+-- | Decode a strict bytestring into a list of ASN.1 values, using BER.
 decodeASN1' :: B.ByteString -> Either ASN1Error [ASN1]
 decodeASN1' = Generic.decodeASN1' BER
 
--- | Decode a strict BER bytestring with its representation.
+-- | Decode a strict bytestring into a list of 'ASN1Repr' pairs, using BER.
 decodeASN1Repr' :: B.ByteString -> Either ASN1Error [ASN1Repr]
 decodeASN1Repr' = Generic.decodeASN1Repr' BER

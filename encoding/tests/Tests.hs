@@ -32,8 +32,9 @@ import           Data.Hourglass
                    )
 import           Test.Tasty ( TestTree, defaultMain, testGroup )
 import           Test.Tasty.QuickCheck
-                   ( Arbitrary (..), Gen, choose, elements, listOf1, oneof
-                   , conjoin, counterexample, once, resize, suchThat, testProperty
+                   ( Arbitrary (..), Gen, choose, conjoin, counterexample
+                   , elements, listOf1, once, oneof, resize, suchThat
+                   , testProperty
                    )
 
 instance Arbitrary ASN1Class where
@@ -307,23 +308,43 @@ moduleApiTests = testGroup "Module API"
   [ testProperty "DER encoding and decoding match generic API" $ \(ASN1s values) ->
       let lazyBytes = encodeASN1 DER values
           strictBytes = Generic.encodeASN1' DER values
-      in conjoin
-        [ counterexample "lazy encoding" (DER.encodeASN1 values == lazyBytes)
-        , counterexample "strict encoding" (DER.encodeASN1' values == strictBytes)
-        , counterexample "lazy decoding" (DER.decodeASN1 lazyBytes == decodeASN1 DER lazyBytes)
-        , counterexample "strict decoding" (DER.decodeASN1' strictBytes == Generic.decodeASN1' DER strictBytes)
-        , counterexample "lazy representation" (DER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr DER lazyBytes)
-        , counterexample "strict representation" (DER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' DER strictBytes)
-        ]
+      in  conjoin
+            [ counterexample
+                "lazy encoding"
+                (DER.encodeASN1 values == lazyBytes)
+            , counterexample
+                "strict encoding"
+                (DER.encodeASN1' values == strictBytes)
+            , counterexample
+                "lazy decoding"
+                (DER.decodeASN1 lazyBytes == decodeASN1 DER lazyBytes)
+            , counterexample
+                "strict decoding"
+                (DER.decodeASN1' strictBytes == Generic.decodeASN1' DER strictBytes)
+            , counterexample
+                "lazy representation"
+                (DER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr DER lazyBytes)
+            , counterexample
+                "strict representation"
+                (DER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' DER strictBytes)
+            ]
   , testProperty "BER decoding matches generic API" $ \(ASN1s values) ->
       let lazyBytes = encodeASN1 DER values
           strictBytes = Generic.encodeASN1' DER values
-      in conjoin
-        [ counterexample "lazy decoding" (BER.decodeASN1 lazyBytes == decodeASN1 BER lazyBytes)
-        , counterexample "strict decoding" (BER.decodeASN1' strictBytes == Generic.decodeASN1' BER strictBytes)
-        , counterexample "lazy representation" (BER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr BER lazyBytes)
-        , counterexample "strict representation" (BER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' BER strictBytes)
-        ]
+      in  conjoin
+            [ counterexample
+                "lazy decoding"
+                (BER.decodeASN1 lazyBytes == decodeASN1 BER lazyBytes)
+            , counterexample
+                "strict decoding"
+                (BER.decodeASN1' strictBytes == Generic.decodeASN1' BER strictBytes)
+            , counterexample
+                "lazy representation"
+                (BER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr BER lazyBytes)
+            , counterexample
+                "strict representation"
+                (BER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' BER strictBytes)
+            ]
   , testProperty "decoders preserve errors and representations" $ once $
       conjoin [counterexample name (equivalent bytes) | (name, bytes) <- fixtures]
   , testProperty "BER accepts indefinite length while DER rejects it" $ once $
@@ -361,4 +382,5 @@ moduleApiTests = testGroup "Module API"
       ]
 
 main :: IO ()
-main = defaultMain $ testGroup "asn1-encoding" [marshallingTests, malformedTests, moduleApiTests]
+main = defaultMain $
+  testGroup "asn1-encoding" [marshallingTests, malformedTests, moduleApiTests]

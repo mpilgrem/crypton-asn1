@@ -12,7 +12,6 @@ and this project adheres to the
   `Data.ASN1.Encoding.BER` alongside the existing generic API. DER provides
   decoding and encoding; BER provides decoding only. Both include strict and
   lazy decoding with representation-preserving alternatives.
-
 * Module `Data.ASN1.Encoding` uses more expressive type variables in signatures,
   allowing better error messages.
 
