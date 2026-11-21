@@ -9,6 +9,10 @@ Generalised Abstract Syntax Notation One (ASN.1) decoding and encoding
 interface, that you can use with encoding rules that belong to the
 'ASN1Decoding', 'ASN1DecodingRepr', and/or 'ASN1Encoding' type classes.
 
+For rules-specific operations without a marker argument, use
+"Data.ASN1.Encoding.DER" or "Data.ASN1.Encoding.BER". Those modules
+specialise this interface; parsing and validation remain with the same codec.
+
 For example (lazy bytestring):
 
 > module Main ( main ) where
