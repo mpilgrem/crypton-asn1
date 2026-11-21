@@ -1,12 +1,15 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 import           Control.Monad ( liftM4, replicateM )
-import           Data.ASN1.BinaryEncoding ( DER (..) )
+import           Data.ASN1.BinaryEncoding ( BER (..), DER (..) )
 import           Data.ASN1.BinaryEncoding.Parse ( parseLBS )
 import           Data.ASN1.BinaryEncoding.Writer ( toLazyByteString )
 import           Data.ASN1.BitArray ( BitArray, toBitArray )
 import           Data.ASN1.Encoding
                    ( ASN1Decoding (..), ASN1Encoding (..), decodeASN1' )
+import qualified Data.ASN1.Encoding as Generic
+import qualified Data.ASN1.Encoding.BER as BER
+import qualified Data.ASN1.Encoding.DER as DER
 import           Data.ASN1.Get ( Result (..), runGet )
 import           Data.ASN1.Prim ( mkSmallestLength )
 import           Data.ASN1.Serialize ( getHeader, putHeader )
@@ -20,6 +23,8 @@ import           Data.ASN1.Types.Lowlevel
                    , ASN1Length (..), ASN1Tag
                    )
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as L
+import           Data.Either ( isLeft )
 import           Data.Hourglass
                    ( Date (..), DateTime (..), Elapsed (..), Hours (..)
                    , Minutes (..), Month (..), Seconds (..), TimeOfDay (..)
@@ -27,8 +32,9 @@ import           Data.Hourglass
                    )
 import           Test.Tasty ( TestTree, defaultMain, testGroup )
 import           Test.Tasty.QuickCheck
-                   ( Arbitrary (..), Gen, choose, elements, listOf1, oneof
-                   , once, resize, suchThat, testProperty
+                   ( Arbitrary (..), Gen, choose, conjoin, counterexample
+                   , elements, listOf1, once, oneof, resize, suchThat
+                   , testProperty
                    )
 
 instance Arbitrary ASN1Class where
@@ -295,5 +301,86 @@ malformedTests = testGroup "Malformed"
     Left _  -> True
     Right _ -> False
 
+-- The module API only specialises the generic API. Compare both successful
+-- values and malformed-input results, including lazy input split across chunks.
+moduleApiTests :: TestTree
+moduleApiTests = testGroup "Module API"
+  [ testProperty "DER encoding and decoding match generic API" $ \(ASN1s values) ->
+      let lazyBytes = encodeASN1 DER values
+          strictBytes = Generic.encodeASN1' DER values
+      in  conjoin
+            [ counterexample
+                "lazy encoding"
+                (DER.encodeASN1 values == lazyBytes)
+            , counterexample
+                "strict encoding"
+                (DER.encodeASN1' values == strictBytes)
+            , counterexample
+                "lazy decoding"
+                (DER.decodeASN1 lazyBytes == decodeASN1 DER lazyBytes)
+            , counterexample
+                "strict decoding"
+                (DER.decodeASN1' strictBytes == Generic.decodeASN1' DER strictBytes)
+            , counterexample
+                "lazy representation"
+                (DER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr DER lazyBytes)
+            , counterexample
+                "strict representation"
+                (DER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' DER strictBytes)
+            ]
+  , testProperty "BER decoding matches generic API" $ \(ASN1s values) ->
+      let lazyBytes = encodeASN1 DER values
+          strictBytes = Generic.encodeASN1' DER values
+      in  conjoin
+            [ counterexample
+                "lazy decoding"
+                (BER.decodeASN1 lazyBytes == decodeASN1 BER lazyBytes)
+            , counterexample
+                "strict decoding"
+                (BER.decodeASN1' strictBytes == Generic.decodeASN1' BER strictBytes)
+            , counterexample
+                "lazy representation"
+                (BER.decodeASN1Repr lazyBytes == Generic.decodeASN1Repr BER lazyBytes)
+            , counterexample
+                "strict representation"
+                (BER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' BER strictBytes)
+            ]
+  , testProperty "decoders preserve errors and representations" $ once $
+      conjoin [counterexample name (equivalent bytes) | (name, bytes) <- fixtures]
+  , testProperty "BER accepts indefinite length while DER rejects it" $ once $
+      conjoin
+        [ BER.decodeASN1' indefinite == Right [Start Sequence, IntVal 1, End Sequence]
+        , isLeft (DER.decodeASN1' indefinite)
+        , isLeft (DER.decodeASN1 (L.fromStrict indefinite))
+        , isLeft (DER.decodeASN1Repr' indefinite)
+        , isLeft (DER.decodeASN1Repr (L.fromStrict indefinite))
+        ]
+  ]
+ where
+  indefinite = B.pack [0x30, 0x80, 0x02, 0x01, 0x01, 0x00, 0x00]
+  fixtures =
+    [ ("empty", B.empty)
+    , ("nested DER", B.pack [0x30, 0x05, 0x02, 0x01, 0xff, 0x05, 0x00])
+    , ("BER indefinite length", indefinite)
+    , ("nonminimal DER length", B.pack [0x02, 0x81, 0x01, 0x01])
+    , ("truncated value", B.pack [0x02, 0x02, 0x01])
+    , ("truncated header", B.pack [0x02, 0x82, 0x01])
+    , ("primitive SEQUENCE", B.pack [0x10, 0x06, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01])
+    , ("empty BIT STRING", B.pack [0x30, 0x05, 0x02, 0x01, 0x01, 0x03, 0x00])
+    ]
+  equivalent strictBytes =
+    let chunked = L.fromChunks (map B.singleton (B.unpack strictBytes))
+    in conjoin
+      [ DER.decodeASN1 chunked == Generic.decodeASN1 DER chunked
+      , DER.decodeASN1' strictBytes == Generic.decodeASN1' DER strictBytes
+      , DER.decodeASN1Repr chunked == Generic.decodeASN1Repr DER chunked
+      , DER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' DER strictBytes
+      , BER.decodeASN1 chunked == Generic.decodeASN1 BER chunked
+      , BER.decodeASN1' strictBytes == Generic.decodeASN1' BER strictBytes
+      , BER.decodeASN1Repr chunked == Generic.decodeASN1Repr BER chunked
+      , BER.decodeASN1Repr' strictBytes == Generic.decodeASN1Repr' BER strictBytes
+      ]
+
 main :: IO ()
-main = defaultMain $ testGroup "asn1-encoding" [marshallingTests, malformedTests]
+main = defaultMain $
+  testGroup "asn1-encoding" [marshallingTests, malformedTests, moduleApiTests]
